@@ -1,0 +1,29 @@
+{# templates/home/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Bienvenue chez Cosmic-Bazaar{% endblock %}
+
+{% block body %}
+<div class="relative min-h-screen  bg-black overflow-hidden">
+    <video 
+        autoplay 
+        loop 
+        muted 
+        playsinline 
+        class="absolute inset-0 w-full h-full object-cover scale-[1.02]">
+        <source src="{{ asset('videos/background_home.webm') }}" type="video/webm">
+        Your browser does not support the video tag.
+    </video>
+
+    <div class="absolute inset-0 bg-black/20 backdrop-blur-sm"></div>
+
+    <div class="relative z-10 flex flex-col items-center justify-center min-h-screen text-white text-center px-4">
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">Bienvenue chez Cosmic-Bazaar</h1>
+        <p class="text-xl md:text-2xl lg:text-3xl">Votre portail vers le commerce intergalactique</p>
+        <a href="#" class="mt-8 px-6 py-3 bg-gradient-to-r from-purple-400 to-pink-600 text-white font-semibold rounded-full hover:from-purple-500 hover:to-pink-700 transition-colors">
+            Explorez l'univers
+        </a>
+    </div>
+</div>
+{% endblock %}
