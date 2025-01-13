@@ -1,6 +1,6 @@
 # Space-Universal
 
-Space-Universal is a Docker-based Symfony project that integrates FrankenPHP and Webpack Encore for modern web development. This guide explains how to set up, run, and manage the project efficiently.
+Space-Universal is a Docker-based Symfony project that integrates FrankenPHP, Tailwind CSS, and Webpack Encore for modern web development. This guide explains how to set up, run, and manage the project efficiently.
 
 ---
 
@@ -28,21 +28,29 @@ Before starting, ensure you have the following installed on your system:
    docker compose up -d --build
    ```
 
-### Starting the Project
+3. Install project dependencies (inside the container):
+   ```bash
+   docker compose exec -it php /bin/bash
+   npm install
+   composer install
+   ```
 
-To start the project (after the initial setup):
+---
+
+## Running the Project
+
+To start the project and compile assets in watch mode for development, use:
 ```bash
-docker compose up -d
+npm run dev
 ```
 
-This will start all the services in detached mode.
+This single command runs both Tailwind CSS and Webpack Encore in parallel.
 
 ---
 
 ## Accessing the Symfony Container
 
 To execute Symfony or other commands within the container:
-
 ```bash
 docker compose exec -it php /bin/bash
 ```
@@ -70,40 +78,28 @@ Once inside the container, you can run Symfony, Composer, and Node.js commands.
    php bin/console about
    ```
 
-### Composer Commands
-
-1. Install dependencies:
-   ```bash
-   composer install
-   ```
-
-2. Update dependencies:
-   ```bash
-   composer update
-   ```
-
 ### Node.js and Webpack Commands
 
-1. Install Node.js dependencies:
-   ```bash
-   npm install
-   ```
-
-2. Compile assets in development mode:
+1. Compile assets in development mode:
    ```bash
    npm run dev
    ```
 
-3. Compile assets in production mode:
+2. Compile assets in production mode:
    ```bash
    npm run build
    ```
 
-4. If Webpack is buggy or not compiling correctly, clean and recompile:
+3. If Webpack or Tailwind CSS is buggy, clean and reinstall:
    ```bash
    rm -rf node_modules package-lock.json
    npm install
    npm run dev
+   ```
+
+4. Force Webpack recompile (as a fallback):
+   ```bash
+   ./node_modules/.bin/webpack --config webpack.config.js --mode development
    ```
 
 ---
@@ -151,12 +147,12 @@ If you encounter issues:
    ```bash
    php bin/console cache:clear
    ```
-4. Recompile Webpack assets:
+4. Recompile Webpack and Tailwind CSS:
    ```bash
    npm run dev
    ```
-   You can also run this to recompile the webpack 
 
+You can also run this to recompile Webpack manually:
    ```bash
    ./node_modules/.bin/webpack --config webpack.config.js --mode development
    ```
