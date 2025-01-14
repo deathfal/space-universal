@@ -165,5 +165,5 @@ This project is licensed under the ISC License. See the LICENSE file for details
 
 ---
 
-Enjoy building with **Space-Universal**!! 🚀
+Enjoy building with **Space-Universal**! 🚀
 
