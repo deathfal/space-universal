@@ -1,0 +1,69 @@
+{# templates/products/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Produits Cosmiques{% endblock %}
+
+{% block body %}
+<div class="container mx-auto p-8">
+    <h1 class="text-center text-3xl text-purple-500 mb-8">Produits Cosmiques</h1>
+
+    <div class="flex flex-col md:flex-row gap-8">
+        {# Filtres #}
+        <aside class="w-full md:w-1/4 bg-gray-800 p-6 rounded-lg">
+            <h2 class="text-xl mb-4">Filtres</h2>
+
+            <div class="mb-4">
+                <h3 class="text-lg mb-2">Gamme de Prix</h3>
+                <input type="range" min="0" max="1000" value="0" id="price-range" class="w-full">
+                <div class="flex justify-between mt-2">
+                    <span>0 UEC</span>
+                    <span>1000 UEC</span>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <h3 class="text-lg mb-2">Catégorie</h3>
+                <label class="block mb-2">
+                    <input type="checkbox" name="category[]" value="plantes" class="mr-2"> Plantes Aliens
+                </label>
+                <label class="block mb-2">
+                    <input type="checkbox" name="category[]" value="armes" class="mr-2"> Armes Rares
+                </label>
+                <label class="block mb-2">
+                    <input type="checkbox" name="category[]" value="mineraux" class="mr-2"> Minéraux Exotiques
+                </label>
+                <label class="block mb-2">
+                    <input type="checkbox" name="category[]" value="pieces" class="mr-2"> Pièces de Vaisseaux Spatiaux
+                </label>
+            </div>
+
+            <button type="submit" class="w-full bg-gray-700 text-white py-3 rounded-md">Appliquer les Filtres</button>
+        </aside>
+
+        {# Grille de Produits #}
+        <main class="w-full md:w-3/4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for product in products %}
+                <article class="bg-gray-800 rounded-lg overflow-hidden">
+                    <img src="{{ product.image }}" alt="{{ product.name }}" class="w-full h-56 object-cover">
+                    <div class="p-4">
+                        <h3 class="text-lg text-white">{{ product.name }}</h3>
+                        <div class="text-purple-500 text-xl font-bold my-2">{{ product.price }} UEC</div>
+                        <div class="text-yellow-500 my-2">
+                            {% for i in 1..5 %}
+                                {% if i <= product.rating %}
+                                    ★
+                                {% else %}
+                                    ☆
+                                {% endif %}
+                            {% endfor %}
+                            {{ product.rating }}
+                        </div>
+                        <a href="" class="block w-full bg-purple-500 text-white text-center py-3 rounded-md">Voir Détails</a>
+                    </div>
+                </article>
+            {% endfor %}
+        </main>
+    </div>
+</div>
+{% endblock %}
