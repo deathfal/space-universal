@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Confirm Your Registration</title>
+</head>
+<body>
+    <h1>Welcome {{ username }}!</h1>
+    <p>Thank you for registering on our platform. Please confirm your registration by clicking the link below:</p>
+    <p>
+        <a href="{{ url('app_verify_email', {'token': 'your-verification-token'}) }}">
+            Confirm Registration
+        </a>
+    </p>
+</body>
+</html>
