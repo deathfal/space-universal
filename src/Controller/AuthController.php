@@ -10,16 +10,57 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\Routing\Annotation\Route;
+// use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
+
+use Symfony\Component\Routing\Attribute\Route;
 class AuthController extends AbstractController
 {
-    #[Route('/login', name: 'login')]
-    public function login(): Response
+    #[Route(path: '/login', name: 'app_login')]
+    public function login(AuthenticationUtils $authenticationUtils, Security $security): Response
     {
-        return $this->render('auth/login.html.twig');
+        // Get authentication error if there is one
+        $error = $authenticationUtils->getLastAuthenticationError();
+        $lastUsername = $authenticationUtils->getLastUsername();
+
+        // Debug user state
+        $user = $security->getUser();
+        if ($user) {
+            $this->addFlash('success', 'Logged in as: ' . $user->getUserIdentifier() . ' with roles: ' . implode(', ', $user->getRoles()));
+            return $this->redirectToRoute('app_test'); // Redirect to test page
+        }
+
+        if ($error) {
+            $this->addFlash('error', 'Login failed: ' . $error->getMessageKey());
+        }
+
+        return $this->render('auth/login.html.twig', [
+            'last_username' => $lastUsername,
+            'error' => $error,
+        ]);
+    }
+
+
+
+    #[Route(path: '/test2', name: 'app_test')]
+    public function test(Security $security): Response
+    {
+        $user = $security->getUser();
+
+        if (!$user) {
+            return new Response('User not logged in', Response::HTTP_UNAUTHORIZED);
+        }
+
+        return new Response('Logged in as: ' . $user->getUserIdentifier() . ' with roles: ' . implode(', ', $user->getRoles()));
+    }
+
+    #[Route(path: '/logout', name: 'app_logout')]
+    public function logout(): void
+    {
+        throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
     }
 
     #[Route('/test-email', name: 'test_email')]
@@ -41,62 +82,50 @@ class AuthController extends AbstractController
         Request $request,
         UserPasswordHasherInterface $userPasswordHasher,
         EntityManagerInterface $entityManager,
-        Security $security,
         MailerInterface $mailer
     ): Response {
-        // Debug: Log the start of the registration process
-        $this->addFlash('info', 'Registration process started.');
-
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
 
-        // Debug: Check if the form is submitted
-        if ($form->isSubmitted()) {
-            $this->addFlash('info', 'Form submitted.');
+        if ($form->isSubmitted() && $form->isValid()) {
+            $plainPassword = $form->get('plainPassword')->getData();
+            $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
+            $user->setCreatedAt(new \DateTimeImmutable());
+            $user->setRoles(['ROLE_USER']);
 
-            // Debug: Check if the form is valid
-            if ($form->isValid()) {
-                $this->addFlash('success', 'Form is valid. Processing registration.');
+            $entityManager->persist($user);
+            $entityManager->flush();
+            // Debug: Log email preparation
+            $this->addFlash('info', 'Preparing confirmation email for: ' . $user->getEmail());
 
-                /** @var string $plainPassword */
-                $plainPassword = $form->get('plainPassword')->getData();
 
-                // Encode the plain password
-                $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
-                $user->setCreatedAt(new \DateTimeImmutable());
-                $user->setRoles(['ROLE_USER']);
-
-                // Save the user
-                try {
-                    $entityManager->persist($user);
-                    $entityManager->flush();
-
-                    // Send a confirmation email
-                    $email = (new TemplatedEmail())
-                        ->from('noreply@yourdomain.com')
-                        ->to($user->getEmail())
-                        ->subject('Confirm your registration')
-                        ->htmlTemplate('emails/registration.html.twig')
-                        ->context([
-                            'username' => $user->getUsername(),
-                        ]);
-
-                    $mailer->send($email);
-
-                    $this->addFlash('success', 'Registration successful! A confirmation email has been sent to your inbox.');
-
-                    return $this->redirectToRoute('login');
-                } catch (\Exception $e) {
-                    // Debug: Log any exception
-                    $this->addFlash('error', 'An error occurred while saving the user: ' . $e->getMessage());
-                }
-            } else {
-                // Debug: Log form validation errors
-                foreach ($form->getErrors(true) as $error) {
-                    $this->addFlash('error', $error->getMessage());
-                }
+            if (!$user->getEmail()) {
+                $this->addFlash('error', 'The email address is invalid.');
+                return $this->redirectToRoute('register');
             }
+            // Send confirmation email
+            $email = (new TemplatedEmail())
+                ->from('noreply@yourdomain.com')
+                ->to($user->getEmail())
+                ->subject('Confirm your registration')
+                ->htmlTemplate('emails/registration.html.twig')
+                ->context([
+                    'username' => $user->getUsername(),
+                ]);
+
+            try {
+                $mailer->send($email);
+                $this->addFlash('success', 'Registration successful! Check your email for confirmation.');
+            } catch (\Exception $e) {
+                $this->addFlash('error', 'Failed to send confirmation email: ' . $e->getMessage());
+            }
+
+            return $this->redirectToRoute('app_login');
+        }
+
+        foreach ($form->getErrors(true) as $error) {
+            $this->addFlash('error', $error->getMessage());
         }
 
         return $this->render('auth/register.html.twig', [
