@@ -1,111 +1,127 @@
-{# templates/products/index.html.twig #}
-
 {% extends 'base.html.twig' %}
 
 {% block title %}Produits Cosmiques{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+{% endblock %}
 
 {% block body %}
 <style>
     :root {
         --background-dark: #0d1117;
         --card-background: #1a2332;
-        --title-pink: #e83cdd;
         --title-purple: #9333ea;
         --button-purple: #9333ea;
         --button-hover: #7928ca;
-        --filter-hover: #2a3547;
         --filter-button: #1e2738;
     }
 
     .product-grid {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 2rem; 
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 2rem;
     }
 
-    .filters-section {
-        width: 250px;
-        padding: 1rem;
+    .product-card {
+        transition: all 0.3s ease-in-out;
     }
 
-    .products-section {
-        flex: 1;
-        padding: 1rem;
+    .product-card:hover {
+        transform: translateY(-0.5rem);
+        box-shadow: 0 10px 15px -3px rgba(147, 51, 234, 0.3);
     }
 
-    .filter-item, .product-item {
-        padding: 0.5rem; 
+    .price-slider {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 8px;
+        border-radius: 5px;
+        background: #4a5568;
+        outline: none;
+        opacity: 0.7;
+        transition: opacity .2s;
+    }
+
+    .price-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: var(--button-purple);
+        cursor: pointer;
+    }
+
+    .price-slider::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: var(--button-purple);
+        cursor: pointer;
     }
 </style>
 
-<div style="background-color: var(--background-dark); min-height: 100vh;">
-    <h1 class="text-center text-5xl font-bold py-8" style="color: var(--title-pink)">Produits Cosmiques</h1>
+<div class="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
+    <div class="container mx-auto px-4 py-8 pt-20">
+        <h1 class="text-4xl font-bold mb-8 text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
+            Produits Cosmiques
+        </h1>
 
-    <div class="max-w-[1400px] mx-auto flex gap-2 items-stretch"> <!-- Utilisez items-stretch pour aligner les hauteurs -->
-        {# Section Filtres (Gauche) #}
-        <div class="filters-section flex-shrink-0"> <!-- Utilisez flex-shrink-0 pour empêcher la réduction de la largeur -->
-            <div class="p-6 rounded-lg h-full" style="background-color: var(--card-background)"> <!-- Utilisez h-full pour que la hauteur suive -->
-               <h2 class="text-2xl font-bold text-white mb-8" style="padding-left: 1rem;">Filtres</h2>
-
-                <div class="mb-8 filter-item">
-                    <h3 class="text-lg text-white mb-4">Gamme de Prix</h3>
-                    <input type="range" min="0" max="1000" value="0" class="w-full h-2 rounded-lg appearance-none" 
-                           style="background-color: var(--filter-button)">
-                    <div class="flex justify-between mt-2 text-gray-300">
+        <div class="flex flex-col md:flex-row gap-8">
+            {# Filtres #}
+            <div class="w-full md:w-1/4 bg-gray-800 p-6 rounded-lg">
+                <h2 class="text-2xl font-semibold mb-4">Filtres</h2>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-2">Gamme de Prix</label>
+                    <input type="range" min="0" max="1000" value="500" class="price-slider mb-2">
+                    <div class="flex justify-between text-sm">
                         <span>0 UEC</span>
                         <span>1000 UEC</span>
                     </div>
                 </div>
-
-                <div class="mb-8 filter-item">
-                    <h3 class="text-lg text-white mb-4">Catégorie</h3>
-                    <div class="space-y-3">
-                        <label class="flex items-center text-gray-300">
-                            <input type="checkbox" class="mr-3"> Plantes Aliens
-                        </label>
-                        <label class="flex items-center text-gray-300">
-                            <input type="checkbox" class="mr-3"> Armes Rares
-                        </label>
-                        <label class="flex items-center text-gray-300">
-                            <input type="checkbox" class="mr-3"> Minéraux Exotiques
-                        </label>
-                        <label class="flex items-center text-gray-300">
-                            <input type="checkbox" class="mr-3"> Pièces de Vaisseaux Spatiaux
-                        </label>
-                    </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-2">Catégorie</label>
+                    {% for category in ['Plantes Aliens', 'Armes Rares', 'Minéraux Exotiques', 'Pièces de Vaisseaux Spatiaux'] %}
+                        <div class="flex items-center mb-2">
+                            <input type="checkbox" id="{{ category|lower|replace({' ': '_'}) }}" class="mr-2">
+                            <label for="{{ category|lower|replace({' ': '_'}) }}">{{ category }}</label>
+                        </div>
+                    {% endfor %}
                 </div>
-
-                <button class="w-full py-3 text-white rounded-md" 
-                        style="background-color: var(--filter-button)">
+                <button class="w-full py-2 bg-purple-600 hover:bg-purple-700 rounded-md transition duration-300">
                     Appliquer les Filtres
                 </button>
             </div>
-        </div>
 
-        {# Section Produits (Droite) #}
-        <div class="products-section">
-            <div class="product-grid">
-                {% for product in products %}
-                    <article class="rounded-lg overflow-hidden p-4 product-item" style="background-color: var(--card-background)">
-                        <img src="{{ asset(product.image) }}" alt="{{ product.name }}" class="w-full h-48 object-cover">
-                        <div class="p-4">
-                            <h3 class="text-xl mb-3" style="color: var(--title-purple)">{{ product.name }}</h3>
-                            <div class="flex justify-between items-center mb-4">
-                                <div class="text-2xl font-bold" style="color: var(--title-purple)">{{ product.price }} UEC</div>
-                                <div class="flex items-center">
-                                    <span style="color: #FFD700">★</span>
-                                    <span style="color: #FFD700" class="ml-1">{{ product.rating }}</span>
+            {# Grille de Produits #}
+            <div class="w-full md:w-3/4">
+                <div class="product-grid">
+                    {% for product in products %}
+                        <div class="product-card bg-gray-800 rounded-lg overflow-hidden shadow-lg">
+                            <img src="{{ asset(product.image) }}" alt="{{ product.name }}" class="w-full h-48 object-cover">
+                            <div class="p-4">
+                                <h3 class="text-lg font-semibold mb-2 text-purple-300">{{ product.name }}</h3>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-2xl text-purple-400 font-bold">{{ product.price }} UEC</span>
+                                    <div class="flex items-center">
+                                        <svg class="h-5 w-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                        </svg>
+                                        <span class="ml-1 text-yellow-400">{{ product.rating }}</span>
+                                    </div>
                                 </div>
+                                <a href="" class="block w-full mt-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-md text-center transition duration-300">
+                                    Voir Détails
+                                </a>
                             </div>
-                            <button class="w-full py-3 text-white rounded-md" 
-                                    style="background-color: var(--button-purple)">
-                                Voir Détails
-                            </button>
                         </div>
-                    </article>
-                {% endfor %}
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </div>
 </div>
 {% endblock %}
+
