@@ -15,14 +15,13 @@ security:
 
         login:
             pattern: ^/login$
-            lazy: true # Allow lazy loading for unauthenticated users
             provider: app_user_provider
             form_login:
                 login_path: app_login
                 check_path: app_login
                 enable_csrf: true
                 default_target_path: app_test
-                always_use_default_target_path: false # Redirect to requested page if not explicitly defined
+                always_use_default_target_path: false
             logout:
                 path: app_logout
                 target: app_login
@@ -30,12 +29,11 @@ security:
         main:
             pattern: ^/
             provider: app_user_provider
-            lazy: true # Allow lazy loading
             form_login:
                 login_path: app_login
                 check_path: app_login
                 enable_csrf: true
-                default_target_path: app_test # Redirect after login
+                default_target_path: app_test
             logout:
                 path: app_logout
                 target: app_login
@@ -44,7 +42,7 @@ security:
         - { path: ^/register, roles: PUBLIC_ACCESS }
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/test2, roles: ROLE_USER }
-        - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/, roles: PUBLIC_ACCESS }
 
 when@test:
     security:

@@ -22,28 +22,14 @@ class AuthController extends AbstractController
     #[Route(path: '/login', name: 'app_login')]
     public function login(AuthenticationUtils $authenticationUtils, Security $security): Response
     {
-        // Get authentication error if there is one
         $error = $authenticationUtils->getLastAuthenticationError();
         $lastUsername = $authenticationUtils->getLastUsername();
-
-        // Debug user state
-        $user = $security->getUser();
-        if ($user) {
-            $this->addFlash('success', 'Logged in as: ' . $user->getUserIdentifier() . ' with roles: ' . implode(', ', $user->getRoles()));
-            return $this->redirectToRoute('app_test'); // Redirect to test page
-        }
-
-        if ($error) {
-            $this->addFlash('error', 'Login failed: ' . $error->getMessageKey());
-        }
 
         return $this->render('auth/login.html.twig', [
             'last_username' => $lastUsername,
             'error' => $error,
         ]);
     }
-
-
 
     #[Route(path: '/test2', name: 'app_test')]
     public function test(Security $security): Response
@@ -60,7 +46,7 @@ class AuthController extends AbstractController
     #[Route(path: '/logout', name: 'app_logout')]
     public function logout(): void
     {
-        throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
+        // This method can be blank - it will be intercepted by the logout key on your firewall.
     }
 
     #[Route('/test-email', name: 'test_email')]
