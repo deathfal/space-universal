@@ -1,0 +1,45 @@
+{# templates/admin/products.html.twig #}
+
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Products Management{% endblock %}
+
+{% block body %}
+<h2 class="text-3xl font-bold mb-4">Products Management</h2>
+<div class="mb-4">
+    <a href="#" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+        <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+        </svg>
+        Add New Product
+    </a>
+</div>
+<div class="bg-gray-800 shadow overflow-hidden sm:rounded-lg">
+    <table class="min-w-full divide-y divide-gray-700">
+        <thead class="bg-gray-700">
+            <tr>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Name</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Category</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Stock</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Price</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Actions</th>
+            </tr>
+        </thead>
+        <tbody class="bg-gray-800 divide-y divide-gray-700">
+            {% for product in products %}
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">{{ product.name }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{{ product.category }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{{ product.stock }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">${{ product.price|number_format(2) }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <a href="{{ path('product_details', {id: product.id}) }}" class="text-indigo-400 hover:text-indigo-300 mr-3">View</a>
+                        <a href="#" class="text-indigo-400 hover:text-indigo-300 mr-3">Edit</a>
+                        <a href="#" class="text-red-400 hover:text-red-300">Delete</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
