@@ -5,65 +5,107 @@
 {% block title %}Produits Cosmiques{% endblock %}
 
 {% block body %}
-<div class="container mx-auto p-8">
-    <h1 class="text-center text-3xl text-purple-500 mb-8">Produits Cosmiques</h1>
+<style>
+    :root {
+        --background-dark: #0d1117;
+        --card-background: #1a2332;
+        --title-pink: #e83cdd;
+        --title-purple: #9333ea;
+        --button-purple: #9333ea;
+        --button-hover: #7928ca;
+        --filter-hover: #2a3547;
+        --filter-button: #1e2738;
+    }
 
-    <div class="flex flex-col md:flex-row gap-8">
-        {# Filtres #}
-        <aside class="w-full md:w-1/4 bg-gray-800 p-6 rounded-lg">
-            <h2 class="text-xl mb-4">Filtres</h2>
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem; 
+    }
 
-            <div class="mb-4">
-                <h3 class="text-lg mb-2">Gamme de Prix</h3>
-                <input type="range" min="0" max="1000" value="0" id="price-range" class="w-full">
-                <div class="flex justify-between mt-2">
-                    <span>0 UEC</span>
-                    <span>1000 UEC</span>
-                </div>
-            </div>
+    .filters-section {
+        width: 250px;
+        padding: 1rem;
+    }
 
-            <div class="mb-4">
-                <h3 class="text-lg mb-2">Catégorie</h3>
-                <label class="block mb-2">
-                    <input type="checkbox" name="category[]" value="plantes" class="mr-2"> Plantes Aliens
-                </label>
-                <label class="block mb-2">
-                    <input type="checkbox" name="category[]" value="armes" class="mr-2"> Armes Rares
-                </label>
-                <label class="block mb-2">
-                    <input type="checkbox" name="category[]" value="mineraux" class="mr-2"> Minéraux Exotiques
-                </label>
-                <label class="block mb-2">
-                    <input type="checkbox" name="category[]" value="pieces" class="mr-2"> Pièces de Vaisseaux Spatiaux
-                </label>
-            </div>
+    .products-section {
+        flex: 1;
+        padding: 1rem;
+    }
 
-            <button type="submit" class="w-full bg-gray-700 text-white py-3 rounded-md">Appliquer les Filtres</button>
-        </aside>
+    .filter-item, .product-item {
+        padding: 0.5rem; 
+    }
+</style>
 
-        {# Grille de Produits #}
-        <main class="w-full md:w-3/4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {% for product in products %}
-                <article class="bg-gray-800 rounded-lg overflow-hidden">
-                    <img src="{{ product.image }}" alt="{{ product.name }}" class="w-full h-56 object-cover">
-                    <div class="p-4">
-                        <h3 class="text-lg text-white">{{ product.name }}</h3>
-                        <div class="text-purple-500 text-xl font-bold my-2">{{ product.price }} UEC</div>
-                        <div class="text-yellow-500 my-2">
-                            {% for i in 1..5 %}
-                                {% if i <= product.rating %}
-                                    ★
-                                {% else %}
-                                    ☆
-                                {% endif %}
-                            {% endfor %}
-                            {{ product.rating }}
-                        </div>
-                        <a href="" class="block w-full bg-purple-500 text-white text-center py-3 rounded-md">Voir Détails</a>
+<div style="background-color: var(--background-dark); min-height: 100vh;">
+    <h1 class="text-center text-5xl font-bold py-8" style="color: var(--title-pink)">Produits Cosmiques</h1>
+
+    <div class="max-w-[1400px] mx-auto flex gap-2 items-stretch"> <!-- Utilisez items-stretch pour aligner les hauteurs -->
+        {# Section Filtres (Gauche) #}
+        <div class="filters-section flex-shrink-0"> <!-- Utilisez flex-shrink-0 pour empêcher la réduction de la largeur -->
+            <div class="p-6 rounded-lg h-full" style="background-color: var(--card-background)"> <!-- Utilisez h-full pour que la hauteur suive -->
+               <h2 class="text-2xl font-bold text-white mb-8" style="padding-left: 1rem;">Filtres</h2>
+
+                <div class="mb-8 filter-item">
+                    <h3 class="text-lg text-white mb-4">Gamme de Prix</h3>
+                    <input type="range" min="0" max="1000" value="0" class="w-full h-2 rounded-lg appearance-none" 
+                           style="background-color: var(--filter-button)">
+                    <div class="flex justify-between mt-2 text-gray-300">
+                        <span>0 UEC</span>
+                        <span>1000 UEC</span>
                     </div>
-                </article>
-            {% endfor %}
-        </main>
+                </div>
+
+                <div class="mb-8 filter-item">
+                    <h3 class="text-lg text-white mb-4">Catégorie</h3>
+                    <div class="space-y-3">
+                        <label class="flex items-center text-gray-300">
+                            <input type="checkbox" class="mr-3"> Plantes Aliens
+                        </label>
+                        <label class="flex items-center text-gray-300">
+                            <input type="checkbox" class="mr-3"> Armes Rares
+                        </label>
+                        <label class="flex items-center text-gray-300">
+                            <input type="checkbox" class="mr-3"> Minéraux Exotiques
+                        </label>
+                        <label class="flex items-center text-gray-300">
+                            <input type="checkbox" class="mr-3"> Pièces de Vaisseaux Spatiaux
+                        </label>
+                    </div>
+                </div>
+
+                <button class="w-full py-3 text-white rounded-md" 
+                        style="background-color: var(--filter-button)">
+                    Appliquer les Filtres
+                </button>
+            </div>
+        </div>
+
+        {# Section Produits (Droite) #}
+        <div class="products-section">
+            <div class="product-grid">
+                {% for product in products %}
+                    <article class="rounded-lg overflow-hidden p-4 product-item" style="background-color: var(--card-background)">
+                        <img src="{{ asset(product.image) }}" alt="{{ product.name }}" class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <h3 class="text-xl mb-3" style="color: var(--title-purple)">{{ product.name }}</h3>
+                            <div class="flex justify-between items-center mb-4">
+                                <div class="text-2xl font-bold" style="color: var(--title-purple)">{{ product.price }} UEC</div>
+                                <div class="flex items-center">
+                                    <span style="color: #FFD700">★</span>
+                                    <span style="color: #FFD700" class="ml-1">{{ product.rating }}</span>
+                                </div>
+                            </div>
+                            <button class="w-full py-3 text-white rounded-md" 
+                                    style="background-color: var(--button-purple)">
+                                Voir Détails
+                            </button>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
