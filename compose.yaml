@@ -76,8 +76,15 @@ services:
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
 
 
+  composer:
+    image: composer:2
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: ["install", "--ignore-platform-reqs", "--no-scripts", "--no-interaction"]
 
 ###< doctrine/doctrine-bundle ###
+
 
 volumes:
   caddy_data:
