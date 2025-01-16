@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Welcome!
+{% endblock %}
+
+{% block body %}
+	<h1>Confirm your email</h1>
+
+	<p>Please confirm your email address by clicking the following link:</p>
+
+	<a href="{{ signedUrl }}">Confirm my email</a>
+
+	<p>This link will expire in
+		{{ expiresAt|date('F j, Y, g:i a') }}.</p>
+{% endblock %}
