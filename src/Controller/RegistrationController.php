@@ -20,16 +20,15 @@ use SymfonyCasts\Bundle\VerifyEmail\VerifyEmailHelperInterface;
 class RegistrationController extends AbstractController
 {
 
-    private VerifyEmailHelperInterface $verifyEmailHelper;
 
-    public function __construct(VerifyEmailHelperInterface $verifyEmailHelper)
-    {
-        $this->verifyEmailHelper = $verifyEmailHelper;
-    }
-
-    // public function __construct(private EmailVerifier $emailVerifier)
+    // public function __construct(VerifyEmailHelperInterface $verifyEmailHelper)
     // {
+    //     $this->verifyEmailHelper = $verifyEmailHelper;
     // }
+
+public function __construct(private EmailVerifier $emailVerifier, private VerifyEmailHelperInterface $verifyEmailHelper)
+{
+}
 
     #[Route('/register', name: 'app_register')]
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager, MailerInterface $mailer): Response
@@ -51,28 +50,8 @@ class RegistrationController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
-            // Send registration notification email
-            $signatureComponents = $this->verifyEmailHelper->generateSignature(
-                'app_verify_email', // The route name for email verification
-                $user->getId(),     // The user's ID
-                $user->getEmail(),  // The user's email
-                ['id' => $user->getId()] // Additional parameters if needed
-            );
-
-            // Send confirmation email
-            $email = (new TemplatedEmail())
-                ->from(new Address('no-reply@sector18.quest', 'Space Universal'))
-                ->to($user->getEmail())
-                ->subject('Please Confirm your Email')
-                ->htmlTemplate('registration/confirmation_email.html.twig')
-                ->context([
-                    'signedUrl' => $signatureComponents->getSignedUrl(),
-                    'expiresAt' => $signatureComponents->getExpiresAt(),
-                ]);
-
-            $mailer->send($email);
-
             // generate a signed URL and email it to the user for verification
+            // Warning: Undefined property: App\Controller\RegistrationController::$emailVerifier
             $this->emailVerifier->sendEmailConfirmation(
                 'app_verify_email',
                 $user,
@@ -85,7 +64,7 @@ class RegistrationController extends AbstractController
 
             $this->addFlash('success', 'Registration successful! Please check your email to confirm your account.');
 
-            return $this->redirectToRoute('app_home');
+            return $this->redirectToRoute('app_verify_email_sent');
         }
 
         return $this->render('registration/register.html.twig', [
@@ -112,6 +91,39 @@ class RegistrationController extends AbstractController
         // @TODO Change the redirect on success and handle or remove the flash message in your templates
         $this->addFlash('success', 'Your email address has been verified.');
 
-        return $this->redirectToRoute('app_register');
+        return $this->redirectToRoute('app_verify_success');
     }
+
+    #[Route('/verify/success', name: 'app_verify_success')]
+    public function verifySuccess(): Response
+    {
+        return $this->render('registration/succeedVerifEmail.html.twig');
+    }
+
+    #[Route('verify/sent', name: 'app_verify_email_sent')]
+    public function verifyEmailSent(): Response
+    {
+        return $this->render('registration/mailSent.html.twig');
+    }
+
+    #[Route('/verify/email/resend', name: 'app_verify_email_resend')]
+    public function resendVerificationEmail(MailerInterface $mailer): Response
+    {
+        $user = $this->getUser();
+
+        $this->emailVerifier->sendEmailConfirmation(
+            'app_verify_email',
+            $user,
+            (new TemplatedEmail())
+                ->from(new Address('no-reply@sector18.quest', 'Space Universal'))
+                ->to((string) $user->getEmail())
+                ->subject('Please Confirm your Email')
+                ->htmlTemplate('registration/confirmation_email.html.twig')
+        );
+
+        $this->addFlash('success', 'A new confirmation email has been sent to your email address.');
+
+        return $this->redirectToRoute('app_verify_email_sent');
+    }
+
 }
