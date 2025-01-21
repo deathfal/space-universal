@@ -106,7 +106,7 @@ class AppFixtures extends Fixture
             $order->setBillingAddress($addresses[$i - 1]);
             $order->setShippingAddress($addresses[$i - 1]);
             $order->setTotalPrice(100.0 * $i);
-            $order->setStatus("Status $i");
+            $order->setStatus("Delivered");
             $order->setCreatedAt(new \DateTime());
             $manager->persist($order);
             $orders[] = $order;

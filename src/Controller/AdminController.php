@@ -1,25 +1,47 @@
 <?php
+// src/Controller/AdminController.php
 
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Repository\UserRepository;
+use App\Repository\ProductRepository;
+use App\Repository\OrderRepository;
+use App\Repository\CategoryRepository;
+use App\Repository\ReviewRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\User;
+use App\Entity\Order;
+use App\Entity\Product;
+use App\Entity\Category;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class AdminController extends AbstractController
 {
     #[Route('/admin', name: 'admin_dashboard')]
-    public function dashboard(): Response
+    public function dashboard(UserRepository $userRepository, ProductRepository $productRepository, OrderRepository $orderRepository): Response
     {
-        // In a real application, you would fetch this data from your database or services
+        $totalUsers = $userRepository->count([]);
+        $totalStock = $productRepository->createQueryBuilder('p')
+            ->select('SUM(p.stock)')
+            ->getQuery()
+            ->getSingleScalarResult();
+        $totalSales = $orderRepository->count([]);
+        $totalRevenue = $orderRepository->createQueryBuilder('o')
+            ->select('SUM(o.totalPrice)')
+            ->getQuery()
+            ->getSingleScalarResult();
+
         $data = [
-            'total_revenue' => 45231.89,
+            'total_revenue' => $totalRevenue,
             'revenue_increase' => 20.1,
-            'active_users' => 2350,
-            'user_increase' => 180.1,
-            'products_in_stock' => 12234,
-            'stock_increase' => 19,
-            'active_sales' => 573,
+            'total_users' => $totalUsers,
+            'products_in_stock' => $totalStock,
+            'total_sales' => $totalSales,
             'sales_increase' => 201,
             'chart_labels' => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
             'chart_data' => [4000, 3000, 5000, 4500, 6000, 5500],
@@ -29,54 +51,286 @@ class AdminController extends AbstractController
     }
 
     #[Route('/admin/products', name: 'admin_products')]
-    public function products(): Response
+    public function products(ProductRepository $productRepository): Response
     {
-        // Fetch products from database
-        $products = [
-            ['id' => 1, 'name' => 'Quantum Entanglement Device', 'category' => 'Gadgets', 'stock' => 50, 'price' => 1299.99],
-            ['id' => 2, 'name' => 'Nebula in a Bottle', 'category' => 'Collectibles', 'stock' => 30, 'price' => 149.99],
-            ['id' => 3, 'name' => 'Anti-Gravity Boots', 'category' => 'Apparel', 'stock' => 100, 'price' => 599.99],
-        ];
+        $products = $productRepository->findAll();
 
         return $this->render('admin/products.html.twig', ['products' => $products]);
     }
 
-    #[Route('/admin/orders', name: 'admin_orders')]
-    public function orders(): Response
+    #[Route('/admin/products/add', name: 'admin_product_add')]
+    public function addProduct(Request $request, CategoryRepository $categoryRepository, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
-        // Fetch orders from database
-        $orders = [
-            ['id' => 1, 'customer' => 'John Doe', 'date' => '2023-06-15', 'status' => 'Shipped', 'total' => 1449.98],
-            ['id' => 2, 'customer' => 'Jane Smith', 'date' => '2023-06-14', 'status' => 'Processing', 'total' => 599.99],
-            ['id' => 3, 'customer' => 'Bob Johnson', 'date' => '2023-06-13', 'status' => 'Delivered', 'total' => 149.99],
-        ];
+        if ($request->isMethod('POST')) {
+            $product = new Product();
+            $category = $categoryRepository->find($request->request->get('category'));
+            $product->setCategory($category);
+            $product->setName($request->request->get('name'));
+            $product->setDescription($request->request->get('description'));
+            $product->setPrice($request->request->get('price'));
+            $product->setStock($request->request->get('stock'));
+            $product->setOriginPlanet($request->request->get('origin_planet'));
+            $product->setCreatedAt(new \DateTime());
+
+            $imageFile = $request->files->get('image');
+            if ($imageFile) {
+                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
+
+                try {
+                    $imageFile->move(
+                        $this->getParameter('products_directory'),
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+                    // Handle exception if something happens during file upload
+                }
+
+                $product->setImageUrl('img/products/'.$newFilename);
+            }
+
+            $entityManager->persist($product);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('admin_products');
+        }
+
+        $categories = $categoryRepository->findAll();
+
+        return $this->render('admin/add_product.html.twig', [
+            'categories' => $categories,
+        ]);
+    }
+
+    #[Route('/admin/products/edit/{id}', name: 'admin_product_edit')]
+    public function editProduct(Request $request, Product $product, CategoryRepository $categoryRepository, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
+    {
+        if ($request->isMethod('POST')) {
+            $category = $categoryRepository->find($request->request->get('category'));
+            $product->setCategory($category);
+            $product->setName($request->request->get('name'));
+            $product->setDescription($request->request->get('description'));
+            $product->setPrice($request->request->get('price'));
+            $product->setStock($request->request->get('stock'));
+            $product->setOriginPlanet($request->request->get('origin_planet'));
+
+            $imageFile = $request->files->get('image');
+            if ($imageFile) {
+                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
+
+                try {
+                    $imageFile->move(
+                        $this->getParameter('products_directory'),
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+                    // Handle exception if something happens during file upload
+                }
+
+                $product->setImageUrl('img/products/'.$newFilename);
+            }
+
+            $entityManager->persist($product);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('admin_products');
+        }
+
+        $categories = $categoryRepository->findAll();
+
+        return $this->render('admin/edit_product.html.twig', [
+            'product' => $product,
+            'categories' => $categories,
+        ]);
+    }
+
+    #[Route('/admin/products/delete/{id}', name: 'admin_product_delete', methods: ['POST'])]
+    public function deleteProduct(Request $request, Product $product, EntityManagerInterface $entityManager): Response
+    {
+        if ($this->isCsrfTokenValid('delete'.$product->getId(), $request->request->get('_token'))) {
+            $entityManager->remove($product);
+            $entityManager->flush();
+        }
+
+        return $this->redirectToRoute('admin_products');
+    }
+
+    #[Route('/admin/orders', name: 'admin_orders')]
+    public function orders(OrderRepository $orderRepository): Response
+    {
+        $orders = $orderRepository->findAll();
 
         return $this->render('admin/orders.html.twig', ['orders' => $orders]);
     }
 
-    #[Route('/admin/users', name: 'admin_users')]
-    public function users(): Response
+    #[Route('/admin/orders/edit/{id}', name: 'admin_order_edit')]
+    public function editOrderStatus(Request $request, Order $order, EntityManagerInterface $entityManager): Response
     {
-        // Fetch users from database
-        $users = [
-            ['id' => 1, 'name' => 'John Doe', 'email' => 'john@example.com', 'role' => 'Customer', 'orders' => 5],
-            ['id' => 2, 'name' => 'Jane Smith', 'email' => 'jane@example.com', 'role' => 'Admin', 'orders' => 0],
-            ['id' => 3, 'name' => 'Bob Johnson', 'email' => 'bob@example.com', 'role' => 'Customer', 'orders' => 2],
-        ];
+        if ($request->isMethod('POST')) {
+            $newStatus = $request->request->get('status');
+            $order->setStatus($newStatus);
+            $entityManager->persist($order);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('admin_orders');
+        }
+
+        return $this->render('admin/edit_order.html.twig', ['order' => $order]);
+    }
+
+    #[Route('/admin/orders/delete/{id}', name: 'admin_order_delete', methods: ['POST'])]
+    public function deleteOrder(Request $request, Order $order, EntityManagerInterface $entityManager): Response
+    {
+        if ($this->isCsrfTokenValid('delete'.$order->getId(), $request->request->get('_token'))) {
+            $entityManager->remove($order);
+            $entityManager->flush();
+        }
+
+        return $this->redirectToRoute('admin_orders');
+    }
+
+    #[Route('/admin/users', name: 'admin_users')]
+    public function users(UserRepository $userRepository): Response
+    {
+        $users = $userRepository->findAll();
 
         return $this->render('admin/users.html.twig', ['users' => $users]);
     }
 
-    #[Route('/admin/reviews', name: 'admin_reviews')]
-    public function reviews(): Response
+    #[Route('/admin/users/edit/{id}', name: 'admin_user_edit')]
+    public function editUser(Request $request, User $user, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
-        // Fetch reviews from database
-        $reviews = [
-            ['id' => 1, 'product' => 'Quantum Entanglement Device', 'rating' => 5, 'comment' => 'Great product!', 'user' => 'John Doe'],
-            ['id' => 2, 'product' => 'Nebula in a Bottle', 'rating' => 4, 'comment' => 'Beautiful, but fragile', 'user' => 'Jane Smith'],
-            ['id' => 3, 'product' => 'Anti-Gravity Boots', 'rating' => 5, 'comment' => 'These are amazing!', 'user' => 'Bob Johnson'],
-        ];
+        if ($request->isMethod('POST')) {
+            $username = $request->request->get('username');
+            $email = $request->request->get('email');
+            $isVerified = $request->request->get('is_verified') === '1';
+
+            if ($username !== null) {
+                $user->setUsername($username);
+            }
+
+            if ($email !== null) {
+                $user->setEmail($email);
+            }
+
+            $user->setIsVerified($isVerified);
+
+            if ($request->request->get('remove_avatar')) {
+                $user->setAvatarUrl(null);
+            } else {
+                $avatarFile = $request->files->get('avatar');
+                if ($avatarFile) {
+                    $originalFilename = pathinfo($avatarFile->getClientOriginalName(), PATHINFO_FILENAME);
+                    $safeFilename = $slugger->slug($originalFilename);
+                    $newFilename = $safeFilename.'-'.uniqid().'.'.$avatarFile->guessExtension();
+
+                    try {
+                        $avatarFile->move(
+                            $this->getParameter('avatars_directory'),
+                            $newFilename
+                        );
+                    } catch (FileException $e) {
+                        // Handle exception if something happens during file upload
+                    }
+
+                    $user->setAvatarUrl('img/avatars/'.$newFilename);
+                }
+            }
+
+            $roles = $request->request->all('roles');
+            $user->setRoles($roles);
+
+            $entityManager->persist($user);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('admin_users');
+        }
+
+        return $this->render('admin/edit_user.html.twig', ['user' => $user]);
+    }
+
+    #[Route('/admin/users/delete/{id}', name: 'admin_user_delete', methods: ['POST'])]
+    public function deleteUser(Request $request, User $user, EntityManagerInterface $entityManager): Response
+    {
+        if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->request->get('_token'))) {
+            $entityManager->remove($user);
+            $entityManager->flush();
+        }
+
+        return $this->redirectToRoute('admin_users');
+    }
+
+    #[Route('/admin/reviews', name: 'admin_reviews')]
+    public function reviews(ReviewRepository $reviewRepository): Response
+    {
+        $reviews = $reviewRepository->findAll();
 
         return $this->render('admin/reviews.html.twig', ['reviews' => $reviews]);
+    }
+
+    #[Route('/admin/reviews/delete/{id}', name: 'admin_review_delete', methods: ['POST'])]
+    public function deleteReview(Request $request, Review $review, EntityManagerInterface $entityManager): Response
+    {
+        if ($this->isCsrfTokenValid('delete'.$review->getId(), $request->request->get('_token'))) {
+            $entityManager->remove($review);
+            $entityManager->flush();
+        }
+
+        return $this->redirectToRoute('admin_reviews');
+    }
+
+    #[Route('/admin/categories', name: 'admin_categories')]
+    public function categories(CategoryRepository $categoryRepository): Response
+    {
+        $categories = $categoryRepository->findAll();
+
+        return $this->render('admin/categories.html.twig', ['categories' => $categories]);
+    }
+
+    #[Route('/admin/categories/add', name: 'admin_category_add')]
+    public function addCategory(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        if ($request->isMethod('POST')) {
+            $category = new Category();
+            $category->setName($request->request->get('name'));
+            $category->setDescription($request->request->get('description'));
+
+            $entityManager->persist($category);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('admin_categories');
+        }
+
+        return $this->render('admin/add_category.html.twig');
+    }
+
+    #[Route('/admin/categories/edit/{id}', name: 'admin_category_edit')]
+    public function editCategory(Request $request, Category $category, EntityManagerInterface $entityManager): Response
+    {
+        if ($request->isMethod('POST')) {
+            $category->setName($request->request->get('name'));
+            $category->setDescription($request->request->get('description'));
+
+            $entityManager->persist($category);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('admin_categories');
+        }
+
+        return $this->render('admin/edit_category.html.twig', ['category' => $category]);
+    }
+
+    #[Route('/admin/categories/delete/{id}', name: 'admin_category_delete', methods: ['POST'])]
+    public function deleteCategory(Request $request, Category $category, EntityManagerInterface $entityManager): Response
+    {
+        if ($this->isCsrfTokenValid('delete'.$category->getId(), $request->request->get('_token'))) {
+            $entityManager->remove($category);
+            $entityManager->flush();
+        }
+
+        return $this->redirectToRoute('admin_categories');
     }
 }
