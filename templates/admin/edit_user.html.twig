@@ -19,7 +19,7 @@
         <div>
             <label for="avatar" class="block text-sm font-medium text-gray-300 mb-2">Avatar</label>
             <div class="flex items-center space-x-4">
-                <img src="{{ user.avatarUrl ?: asset('img/avatars/default_avatar.png') }}" alt="Avatar" class="w-16 h-16 rounded-full object-cover">
+                <img src="{{ asset(user.avatarUrl ?: 'img/avatars/default_avatar.png') }}" alt="Avatar" class="w-16 h-16 rounded-full object-cover">
                 <div class="flex-1">
                     <input type="file" id="avatar" name="avatar" class="hidden" accept="image/*">
                     <label for="avatar" class="cursor-pointer bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded inline-block transition duration-150 ease-in-out">
