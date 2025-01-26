@@ -1,0 +1,31 @@
+{# templates/products/detail.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block body %}
+<div class="container mx-auto p-8">
+    <h1 class="text-center text-3xl text-purple-500 mb-8">{{ product.name }}</h1>
+
+    <div class="flex flex-col md:flex-row gap-8">
+        <div class="w-full md:w-1/2">
+            <img src="{{ asset(product.image) }}" alt="{{ product.name }}" class="w-full h-auto object-cover rounded-lg">
+        </div>
+        <div class="w-full md:w-1/2">
+            <div class="bg-gray-800 p-6 rounded-lg">
+                <h2 class="text-2xl text-white mb-4">{{ product.name }}</h2>
+                <p class="text-xl text-purple-400 mb-4">{{ product.price }} UEC</p>
+                <p class="text-white mb-4">{{ product.description }}</p>
+                <div class="flex items-center mb-4">
+                    <span class="text-yellow-400">★</span>
+                    <span class="ml-1 text-yellow-400">{{ product.rating }}</span>
+                </div>
+                <a href="{{ path('app_products') }}" class="block w-full py-3 bg-purple-600 hover:bg-purple-700 rounded-md text-center text-white transition duration-300">
+                    Retour aux produits
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

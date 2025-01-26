@@ -112,7 +112,7 @@
                                         <span class="ml-1 text-yellow-400">{{ product.rating }}</span>
                                     </div>
                                 </div>
-                                <a href="" class="block w-full mt-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-md text-center transition duration-300">
+                                <a href="{{ path('product_details', { 'id': product.id }) }}" class="block w-full mt-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-md text-center transition duration-300">
                                     Voir Détails
                                 </a>
                             </div>
