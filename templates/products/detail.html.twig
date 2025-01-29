@@ -1,0 +1,308 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(to bottom, #1a202c, #000000);
+            color: #ffffff;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            color: #a78bfa;
+            text-decoration: none;
+            margin-bottom: 1.5rem;
+        }
+        .back-link:hover {
+            color: #c4b5fd;
+        }
+        .grid {
+            display: grid;
+            gap: 2rem;
+        }
+        @media (min-width: 768px) {
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        .image-container {
+            background-color: #1f2937;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+        .main-image {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+        }
+        .thumbnail-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        .thumbnail {
+            background-color: #1f2937;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+        .thumbnail img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+        }
+        .product-info {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        .product-title {
+            font-size: 1.875rem;
+            font-weight: bold;
+            background: linear-gradient(to right, #a78bfa, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .rating {
+            display: flex;
+            align-items: center;
+        }
+        .star {
+            width: 1.25rem;
+            height: 1.25rem;
+            fill: #fbbf24;
+        }
+        .price {
+            font-size: 1.875rem;
+            font-weight: bold;
+            color: #a78bfa;
+        }
+        .description {
+            color: #d1d5db;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #9ca3af;
+            margin-bottom: 0.5rem;
+        }
+        .select, .input {
+            width: 100%;
+            padding: 0.5rem;
+            background-color: #374151;
+            border: 1px solid #4b5563;
+            border-radius: 0.25rem;
+            color: #ffffff;
+        }
+        .quantity-input {
+            display: flex;
+            align-items: center;
+        }
+        .quantity-btn {
+            background-color: #4b5563;
+            color: #ffffff;
+            border: none;
+            padding: 0.5rem;
+            cursor: pointer;
+        }
+        .quantity-btn:hover {
+            background-color: #6b7280;
+        }
+        .button-group {
+            display: flex;
+            gap: 1rem;
+        }
+        .add-to-cart {
+            flex: 1;
+            padding: 0.75rem;
+            background: linear-gradient(to right, #7c3aed, #db2777);
+            color: #ffffff;
+            border: none;
+            border-radius: 0.25rem;
+            cursor: pointer;
+        }
+        .add-to-cart:hover {
+            background: linear-gradient(to right, #6d28d9, #be185d);
+        }
+        .wishlist-btn {
+            padding: 0.75rem;
+            background-color: #4b5563;
+            color: #ffffff;
+            border: none;
+            border-radius: 0.25rem;
+            cursor: pointer;
+        }
+        .wishlist-btn:hover {
+            background-color: #6b7280;
+        }
+        .tabs {
+            margin-top: 3rem;
+        }
+        .tab-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+        }
+        .tab {
+            padding: 0.75rem;
+            background-color: #1f2937;
+            color: #d1d5db;
+            border: none;
+            cursor: pointer;
+        }
+        .tab:hover {
+            background-color: #374151;
+            color: #ffffff;
+        }
+        .tab.active {
+            background: linear-gradient(to right, #7c3aed, #db2777);
+            color: #ffffff;
+        }
+        .tab-content {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #1f2937;
+            border-radius: 0.25rem;
+        }
+        .feature-list {
+            list-style-type: disc;
+            padding-left: 1.25rem;
+            color: #d1d5db;
+        }
+        .spec-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            color: #d1d5db;
+        }
+        .spec-item {
+            display: flex;
+            justify-content: space-between;
+        }
+        .spec-key {
+            font-weight: 500;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <a href="{{ path('app_products') }}" class="back-link">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        Back to Products
+    </a>
+
+    <div class="grid">
+        <div>
+            <div class="image-container">
+                <img src="{{ asset(product.images[0]) }}" alt="{{ product.name }}" class="main-image">
+            </div>
+            <div class="thumbnail-grid">
+                {% for img in product.images %}
+                    <div class="thumbnail">
+                        <img src="{{ asset(img) }}" alt="{{ product.name }} {{ loop.index }}">
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="product-info">
+            <h1 class="product-title">{{ product.name }}</h1>
+            <div class="rating">
+                {% for i in 1..5 %}
+                    <svg class="star" viewBox="0 0 24 24" fill="{{ i <= product.rating ? 'currentColor' : 'none' }}" stroke="{{ i <= product.rating ? 'currentColor' : '#9ca3af' }}">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+                    </svg>
+                {% endfor %}
+                <span style="color: #9ca3af; margin-left: 0.5rem;">({{ product.rating }} stars)</span>
+            </div>
+            <p class="price">UEC{{ product.price }}</p>
+            <p class="description">{{ product.description }}</p>
+
+            <div class="form-group">
+                <label for="color" class="form-label">Color</label>
+                <select name="color" id="color" class="select">
+                    <option value="blue">Cosmic Blue</option>
+                    <option value="purple">Nebula Purple</option>
+                    <option value="green">Quantum Green</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="quantity" class="form-label">Quantity</label>
+                <div class="quantity-input">
+                    <button type="button" class="quantity-btn" onclick="this.parentNode.querySelector('input[type=number]').stepDown()">-</button>
+                    <input type="number" id="quantity" name="quantity" value="1" min="1" class="input" style="width: 5rem; text-align: center;">
+                    <button type="button" class="quantity-btn" onclick="this.parentNode.querySelector('input[type=number]').stepUp()">+</button>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="add-to-cart">Add to Cart</button>
+                <button type="button" class="wishlist-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="tabs">
+        <div class="tab-list">
+            <button class="tab active" data-tab="features">Features</button>
+            <button class="tab" data-tab="specs">Specifications</button>
+            <button class="tab" data-tab="reviews">Reviews</button>
+        </div>
+        <div class="tab-content" id="features">
+            <ul class="feature-list">
+                {% for feature in product.features %}
+                    <li>{{ feature }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="tab-content" id="specs" style="display: none;">
+            <div class="spec-grid">
+                {% for key, value in product.specs %}
+                    <div class="spec-item">
+                        <span class="spec-key">{{ key }}:</span>
+                        <span>{{ value }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="tab-content" id="reviews" style="display: none;">
+            <p>Reviews coming soon...</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'))
+                tab.classList.add('active')
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.style.display = content.id === tab.dataset.tab ? 'block' : 'none'
+                })
+            })
+        })
+    </script>
+{% endblock %}
