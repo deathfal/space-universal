@@ -1,0 +1,186 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Votre Panier Cosmique{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .cart-container {
+            min-height: 100vh;
+            background: linear-gradient(to bottom, #111827, #000000);
+            color: white;
+        }
+        .cart-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            padding-top: 5rem;
+            padding-bottom: 4rem;
+        }
+        .cart-title {
+            font-size: 2.25rem;
+            font-weight: bold;
+            margin-bottom: 2rem;
+            text-align: center;
+            background: linear-gradient(to right, #c084fc, #db2777);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .cart-item {
+            display: flex;
+            align-items: center;
+            background-color: #1f2937;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .cart-item img {
+            width: 5rem;
+            height: 5rem;
+            object-fit: cover;
+            border-radius: 0.25rem;
+            margin-right: 1rem;
+        }
+        .cart-item-details {
+            flex-grow: 1;
+        }
+        .cart-item-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+        .cart-item-price {
+            color: #c084fc;
+        }
+        .cart-item-quantity {
+            display: flex;
+            align-items: center;
+        }
+        .cart-item-quantity button {
+            background-color: #374151;
+            color: white;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+        }
+        .cart-item-quantity span {
+            margin: 0 0.5rem;
+        }
+        .cart-item-remove {
+            background: none;
+            border: none;
+            color: #ef4444;
+            margin-left: 1rem;
+            cursor: pointer;
+        }
+        .order-summary {
+            background-color: #1f2937;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            height: fit-content;
+        }
+        .order-summary-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        .order-summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        .order-summary-total {
+            border-top: 1px solid #4b5563;
+            padding-top: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        .checkout-button {
+            width: 100%;
+            background: linear-gradient(to right, #9333ea, #db2777);
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="cart-container">
+    <div class="cart-content">
+        <h1 class="cart-title">Votre Panier Cosmique</h1>
+
+        {% set cartItems = [
+            { id: 1, name: "Hydrogen", price: 299.99, quantity: 1, image: "/img/astatine.png?height=100&width=100" },
+            { id: 2, name: "Coda Ascension", price: 799.99, quantity: 2, image: "/img/Coda_Ascension.jpg?height=100&width=100" }
+        ] %}
+
+        {% set total = cartItems|reduce((sum, item) => sum + item.price * item.quantity, 0) %}
+
+        {% if cartItems|length == 0 %}
+            <div style="text-align: center;">
+                <p style="font-size: 1.5rem; margin-bottom: 1rem;">Votre panier est vide</p>
+                <a href="{{ path('app_products') }}" style="display: inline-block; padding: 0.5rem 1rem; background-color: #9333ea; color: white; text-decoration: none; border-radius: 0.25rem;">
+                    Continuer vos achats
+                </a>
+            </div>
+        {% else %}
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+                <div>
+                    {% for item in cartItems %}
+                        <div class="cart-item">
+                            <img src="{{ asset(item.image) }}" alt="{{ item.name }}">
+                            <div class="cart-item-details">
+                                <h3 class="cart-item-name">{{ item.name }}</h3>
+                                <p class="cart-item-price">{{ item.price }} €</p>
+                            </div>
+                            <div class="cart-item-quantity">
+                                <button onclick="updateQuantity({{ item.id }}, -1)">-</button>
+                                <span>{{ item.quantity }}</span>
+                                <button onclick="updateQuantity({{ item.id }}, 1)">+</button>
+                            </div>
+                            <button class="cart-item-remove" onclick="updateQuantity({{ item.id }}, -{{ item.quantity }})">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                            </button>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="order-summary">
+                    <h2 class="order-summary-title">Résumé de la Commande</h2>
+                    <div class="order-summary-item">
+                        <span>Sous-total</span>
+                        <span>{{ total|number_format(2, ',', ' ') }} €</span>
+                    </div>
+                    <div class="order-summary-item">
+                        <span>Livraison</span>
+                        <span>20,00 €</span>
+                    </div>
+                    <div class="order-summary-item">
+                        <span>Taxe</span>
+                        <span>{{ (total * 0.1)|number_format(2, ',', ' ') }} €</span>
+                    </div>
+                    <div class="order-summary-total">
+                        <span>Total</span>
+                        <span>{{ (total + 20 + total * 0.1)|number_format(2, ',', ' ') }} €</span>
+                    </div>
+                    <button class="checkout-button">Passer à la caisse</button>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        function updateQuantity(id, change) {
+            console.log('Update quantity for item', id, 'by', change);
+        }
+    </script>
+{% endblock %}
