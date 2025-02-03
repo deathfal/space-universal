@@ -1,34 +1,29 @@
-**/*.log
-**/*.md
-**/*.php~
-**/*.dist.php
-**/*.dist
-**/*.cache
-**/._*
-**/.dockerignore
-**/.DS_Store
-**/.git/
-**/.gitattributes
-**/.gitignore
-**/.gitmodules
-**/compose.*.yaml
-**/compose.*.yml
-**/compose.yaml
-**/compose.yml
-**/docker-compose.*.yaml
-**/docker-compose.*.yml
-**/docker-compose.yaml
-**/docker-compose.yml
-**/Dockerfile
-**/Thumbs.db
+# OS / Editor junk
+.DS_Store
+Thumbs.db
+
+# Git and GitHub
+.git
 .github/
-docs/
-public/bundles/
-tests/
-var/
+
+# Node modules (if you use Node)
+node_modules/
+
+# Symfony build artifacts
+var/cache/
+var/log/
+
+# Vendor (if we do composer install in Dockerfile)
 vendor/
-.editorconfig
-.env.*.local
-.env.local
-.env.local.php
-.env.test
+
+# Docker & Compose files
+docker-compose.yml
+docker-compose.yaml
+*.dockerfile
+
+# If you keep your Dockerfile in the root, do NOT ignore it
+#**/Dockerfile
+
+# Tests, docs
+tests/
+docs/

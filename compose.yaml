@@ -75,6 +75,19 @@ services:
       MP_SMTP_AUTH_ACCEPT_ANY: 1
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
 
+  apache:
+    build:
+      context: .
+      dockerfile: ./prod/Dockerfile
+    container_name: symfony_apache
+    ports:
+      - "8086:80"
+    environment:
+      APP_ENV: prod
+      DATABASE_URL: ${DATABASE_URL}
+    depends_on:
+      - database
+
 
 
 ###< doctrine/doctrine-bundle ###
