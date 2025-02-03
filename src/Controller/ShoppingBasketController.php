@@ -14,4 +14,12 @@ class ShoppingBasketController extends AbstractController
         
         return $this->render('shopping/shopping_basket.html.twig');
     }
+
+    #[Route('/add-to-cart/{id}', name: 'add_to_cart')]
+    public function addToCart(int $id): Response
+    {
+
+        return $this->redirectToRoute('shopping_basket');
+    }
 }
+
