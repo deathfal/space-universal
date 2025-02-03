@@ -1,0 +1,96 @@
+{# templates/admin/dashboard.html.twig #}
+
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block body %}
+<h2 class="text-3xl font-bold mb-4">Dashboard</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <div class="bg-gray-800 p-4 rounded-lg">
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="text-sm font-medium">Total Revenue</h3>
+            <svg class="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <div class="text-2xl font-bold">${{ total_revenue|number_format(2) }}</div>
+    </div>
+    <div class="bg-gray-800 p-4 rounded-lg">
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="text-sm font-medium">Total Users</h3>
+            <svg class="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div class="text-2xl font-bold">{{ total_users }}</div>
+    </div>
+    <div class="bg-gray-800 p-4 rounded-lg">
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="text-sm font-medium">Products in Stock</h3>
+            <svg class="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><path d="M2 10h20"/></svg>
+        </div>
+        <div class="text-2xl font-bold">{{ products_in_stock }}</div>
+    </div>
+    <div class="bg-gray-800 p-4 rounded-lg">
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="text-sm font-medium">Total Sales</h3>
+            <svg class="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </div>
+        <div class="text-2xl font-bold">{{ total_sales }}</div>
+    </div>
+</div>
+<div class="bg-gray-800 p-4 rounded-lg">
+    <h3 class="text-lg font-bold mb-4">Sales Overview</h3>
+    <div id="sales-chart" class="w-full h-96"></div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('sales-chart').getContext('2d');
+            const salesChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: {{ chart_labels|json_encode|raw }},
+                    datasets: [{
+                        label: 'Sales',
+                        data: {{ chart_data|json_encode|raw }},
+                        backgroundColor: 'rgba(147, 51, 234, 0.5)',
+                        borderColor: 'rgba(147, 51, 234, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}
