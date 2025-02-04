@@ -11,6 +11,8 @@ RUN apt-get update && apt-get install -y \
     git \
     zip \
     unzip \
+    curl \
+    gnupg \
     && docker-php-ext-install \
     intl \
     pdo \
@@ -18,6 +20,11 @@ RUN apt-get update && apt-get install -y \
 
 # Enable Apache mod_rewrite for Symfony routing
 RUN a2enmod rewrite
+
+# Install Node.js & npm (LTS version)
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs && \
+    npm install -g npm@latest
 
 # Copy application source
 COPY . /var/www/space-universal
@@ -36,6 +43,9 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 # ✅ Install dependencies using Composer (ensure git, zip, and unzip are available)
 RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
+# Install npm dependencies and build assets
+RUN npm install && npm run build
+
 # Update DocumentRoot
 RUN sed -ri -e 's!/var/www/html!/var/www/space-universal/public!g' \
     /etc/apache2/sites-available/000-default.conf \
@@ -45,8 +55,11 @@ RUN sed -ri -e 's!/var/www/html!/var/www/space-universal/public!g' \
 RUN sed -i '/DocumentRoot/a <Directory /var/www/space-universal/public>\nAllowOverride All\nRequire all granted\n</Directory>' \
     /etc/apache2/sites-available/000-default.conf
 
+
+RUN echo "ServerName cosmic-bazaar.sector18.quest" >> /etc/apache2/apache2.conf
+
 # Expose port 80
 EXPOSE 80
 
-# Start Apache server
-CMD ["apache2-foreground"]
+# Start Apache and automatically recompile assets if needed
+CMD ["sh", "-c", "npm run build && apache2-foreground"]
