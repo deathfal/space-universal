@@ -1,6 +1,8 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Produits Cosmiques{% endblock %}
+
+
+{% block title %}Liste des Produits{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
@@ -66,16 +68,16 @@
 <div class="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
     <div class="container mx-auto px-4 py-8 pt-20">
         <h1 class="text-4xl font-bold mb-8 text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
-            Produits Cosmiques
+            Liste des Produits
         </h1>
 
         <div class="flex flex-col md:flex-row gap-8">
-            {# Filtres #}
+            {# Section Filtres #}
             <div class="w-full md:w-1/4 bg-gray-800 p-6 rounded-lg">
                 <h2 class="text-2xl font-semibold mb-4">Filtres</h2>
                 <div class="mb-4">
                     <label class="block text-sm font-medium mb-2">Gamme de Prix</label>
-                    <input type="range" min="0" max="1000" value="500" class="price-slider mb-2">
+                    <input type="range" id="price-filter" min="0" max="1000" value="500" class="price-slider mb-2">
                     <div class="flex justify-between text-sm">
                         <span>0 UEC</span>
                         <span>1000 UEC</span>
@@ -83,45 +85,71 @@
                 </div>
                 <div class="mb-4">
                     <label class="block text-sm font-medium mb-2">Catégorie</label>
-                    {% for category in ['Plantes Aliens', 'Armes Rares', 'Minéraux Exotiques', 'Pièces de Vaisseaux Spatiaux'] %}
+                    {% for category in categories %}
                         <div class="flex items-center mb-2">
-                            <input type="checkbox" id="{{ category|lower|replace({' ': '_'}) }}" class="mr-2">
-                            <label for="{{ category|lower|replace({' ': '_'}) }}">{{ category }}</label>
+                            <input type="checkbox" id="{{ category.name|lower|replace({' ': '_'}) }}" data-category="{{ category.name }}" class="category-filter">
+                            <label for="{{ category.name|lower|replace({' ': '_'}) }}" class="ml-2">{{ category.name }}</label>
                         </div>
                     {% endfor %}
                 </div>
-                <button class="w-full py-2 bg-purple-600 hover:bg-purple-700 rounded-md transition duration-300">
+                <!-- Bouton d'application des filtres avec id "apply-filters" -->
+                <button id="apply-filters" class="w-full py-2 bg-purple-600 hover:bg-purple-700 rounded-md transition duration-300">
                     Appliquer les Filtres
                 </button>
             </div>
 
-            {# Grille de Produits #}
+            {# Grille des Produits #}
             <div class="w-full md:w-3/4">
-                <div class="product-grid">
+                <div class="product-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {% for product in products %}
-                        <div class="product-card bg-gray-800 rounded-lg overflow-hidden shadow-lg">
-                            <img src="{{ asset(product.image) }}" alt="{{ product.name }}" class="w-full h-48 object-cover">
+                        <div class="product-card bg-gray-800 rounded-lg overflow-hidden shadow-lg" data-category="{{ product.category.name }}" data-price="{{ product.price }}">
+                            <img src="{{ asset(product.imageUrl ?: 'img/products/default_product.png') }}" alt="{{ product.name }}" class="w-full h-48 object-cover">
                             <div class="p-4">
                                 <h3 class="text-lg font-semibold mb-2 text-purple-300">{{ product.name }}</h3>
+                                <p class="text-sm text-gray-400 mb-2">{{ product.category.name }}</p>
                                 <div class="flex justify-between items-center">
                                     <span class="text-2xl text-purple-400 font-bold">{{ product.price }} UEC</span>
-                                    <div class="flex items-center">
-                                        <svg class="h-5 w-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
-                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                        </svg>
-                                        <span class="ml-1 text-yellow-400">{{ product.rating }}</span>
-                                    </div>
                                 </div>
-                                <a href="{{ path('product_details', { 'id': product.id }) }}" class="block w-full mt-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-md text-center transition duration-300">
+                                <a href="{{ path('app_product_detail', {'id': product.id}) }}" class="block w-full mt-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-md text-center transition duration-300">
                                     Voir Détails
                                 </a>
                             </div>
                         </div>
+                    {% else %}
+                        <p>Aucun produit trouvé.</p>
                     {% endfor %}
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+
+{% block javascripts %}
+    <script>
+        document.getElementById('apply-filters').addEventListener('click', () => {
+            const selectedCategories = Array.from(document.querySelectorAll('.category-filter:checked'))
+                .map(cb => cb.getAttribute('data-category').toLowerCase());
+            console.log('Catégories sélectionnées:', selectedCategories);
+            
+            const maxPrice = parseFloat(document.getElementById('price-filter').value);
+
+            document.querySelectorAll('.product-card').forEach(card => {
+                const productCategory = card.getAttribute('data-category').toLowerCase();
+                const productPrice = parseFloat(card.getAttribute('data-price'));
+                console.log('Produit:', productCategory, productPrice);
+                
+                if ((selectedCategories.length === 0 || selectedCategories.includes(productCategory)) &&
+                    productPrice <= maxPrice) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    </script>
+{% endblock %}
+
+
 {% endblock %}
 
