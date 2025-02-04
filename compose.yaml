@@ -94,7 +94,10 @@ services:
     volumes:
       - .:/app
     working_dir: /app
-    command: ["install", "--ignore-platform-reqs", "--no-scripts", "--no-interaction"]
+    entrypoint: ["/bin/sh"]
+    tty: true
+    stdin_open: true
+    command: ["-c", "git config --global --add safe.directory /app && /bin/sh"]
 
 ###< doctrine/doctrine-bundle ###
 
