@@ -59,6 +59,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Order::class, mappedBy: 'user', orphanRemoval: true)]
     private Collection $orders;
 
+    /**
+     * @var Collection<int, Feedback>
+     */
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Feedback::class, orphanRemoval: true)]
+    private Collection $feedbacks;
+
     #[ORM\OneToOne(targetEntity: Cart::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
     private ?Cart $cart = null;
 
@@ -67,6 +73,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function __construct()
     {
+        $this->feedbacks = new ArrayCollection();
         $this->paymentMethods = new ArrayCollection();
         $this->reviews = new ArrayCollection();
         $this->orders = new ArrayCollection();
@@ -250,6 +257,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($order->getUser() === $this) {
                 $order->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Feedback>
+     */
+    public function getFeedbacks(): Collection
+    {
+        return $this->feedbacks;
+    }
+
+    public function addFeedback(Feedback $feedback): static
+    {
+        if (!$this->feedbacks->contains($feedback)) {
+            $this->feedbacks->add($feedback);
+            $feedback->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFeedback(Feedback $feedback): static
+    {
+        if ($this->feedbacks->removeElement($feedback)) {
+            // set the owning side to null (unless already changed)
+            if ($feedback->getUser() === $this) {
+                $feedback->setUser(null);
             }
         }
 
