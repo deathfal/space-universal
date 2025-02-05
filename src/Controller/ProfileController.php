@@ -2,20 +2,16 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
-use App\Entity\User;
 use App\Entity\Address;
 use App\Entity\Order;
 use App\Entity\PaymentMethod;
 use App\Entity\Review;
-use App\Form\UserProfileType;
-use App\Form\AddressType;
-use App\Form\PaymentMethodType;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 class ProfileController extends AbstractController
@@ -53,6 +49,7 @@ class ProfileController extends AbstractController
                     $user->setPassword($hashedPassword);
                 } else {
                     $this->addFlash('error', 'Les mots de passe ne correspondent pas.');
+
                     return $this->redirectToRoute('app_profile_edit');
                 }
             }
@@ -71,12 +68,14 @@ class ProfileController extends AbstractController
                     $user->setAvatarUrl('img/avatars/'.$newFilename);
                 } catch (FileException $e) {
                     $this->addFlash('error', 'Erreur lors du téléchargement de l\'avatar.');
+
                     return $this->redirectToRoute('app_profile_edit');
                 }
             }
 
             $entityManager->flush();
             $this->addFlash('success', 'Votre profil a été mis à jour.');
+
             return $this->redirectToRoute('app_profile');
         }
 
@@ -107,6 +106,7 @@ class ProfileController extends AbstractController
             $entityManager->persist($address);
             $entityManager->flush();
             $this->addFlash('success', 'Votre adresse a été ajoutée.');
+
             return $this->redirectToRoute('app_profile');
         }
 
@@ -148,6 +148,7 @@ class ProfileController extends AbstractController
             $entityManager->persist($paymentMethod);
             $entityManager->flush();
             $this->addFlash('success', 'Votre méthode de paiement a été ajoutée.');
+
             return $this->redirectToRoute('app_profile_payment_methods');
         }
 

@@ -17,10 +17,10 @@ class FeedbackType extends AbstractType
                 'attr' => [
                     'class' => 'block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500',
                     'rows' => 4,
-                    'placeholder' => 'Share your experience with Space Universal...'
+                    'placeholder' => 'Share your experience with Space Universal...',
                 ],
                 'label' => 'Your Feedback',
-                'label_attr' => ['class' => 'block text-sm font-medium text-gray-700']
+                'label_attr' => ['class' => 'block text-sm font-medium text-gray-700'],
             ])
         ;
     }

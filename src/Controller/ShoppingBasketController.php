@@ -2,14 +2,13 @@
 
 namespace App\Controller;
 
+use App\Entity\Address;
 use App\Repository\ProductRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
-use App\Entity\Address;
-use App\Entity\User;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Routing\Annotation\Route;
 
 class ShoppingBasketController extends AbstractController
 {
@@ -30,7 +29,7 @@ class ShoppingBasketController extends AbstractController
                     'name'     => $product->getName(),
                     'price'    => $product->getPrice(),
                     'quantity' => $quantity,
-                    'image'    => $product->getImageUrl() ?: 'img/products/default_product.png'
+                    'image'    => $product->getImageUrl() ?: 'img/products/default_product.png',
                 ];
                 $total += $product->getPrice() * $quantity;
             }
@@ -70,7 +69,7 @@ class ShoppingBasketController extends AbstractController
         $cardNumber = $request->request->get('card_number');
         $expiryDate = $request->request->get('expiry_date');
         $cvv = $request->request->get('cvv');
+
         return $this->redirectToRoute('shopping_basket');
     }
 }
-

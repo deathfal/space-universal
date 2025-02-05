@@ -6,13 +6,13 @@ use App\Entity\Address;
 use App\Entity\Cart;
 use App\Entity\CartItem;
 use App\Entity\Category;
+use App\Entity\Feedback;
 use App\Entity\Order;
 use App\Entity\OrderItem;
 use App\Entity\PaymentMethod;
 use App\Entity\Product;
 use App\Entity\Review;
 use App\Entity\User;
-use App\Entity\Feedback;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -42,7 +42,7 @@ class AppFixtures extends Fixture
 
         // Create Users
         $users = [];
-        for ($i = 1; $i <= 3; $i++) {
+        for ($i = 1; $i <= 3; ++$i) {
             $user = new User();
             $user->setEmail("user$i@example.com");
             $user->setUsername("user$i");
@@ -58,7 +58,7 @@ class AppFixtures extends Fixture
 
         // Create Addresses
         $addresses = [];
-        for ($i = 1; $i <= 3; $i++) {
+        for ($i = 1; $i <= 3; ++$i) {
             $address = new Address();
             $address->setStreet("Street $i");
             $address->setCity("City $i");
@@ -73,7 +73,7 @@ class AppFixtures extends Fixture
 
         // Create Categories
         $categories = [];
-        for ($i = 1; $i <= 3; $i++) {
+        for ($i = 1; $i <= 3; ++$i) {
             $category = new Category();
             $category->setName("Category $i");
             $category->setDescription("Description $i");
@@ -83,7 +83,7 @@ class AppFixtures extends Fixture
 
         // Create Products
         $products = [];
-        for ($i = 1; $i <= 3; $i++) {
+        for ($i = 1; $i <= 3; ++$i) {
             $product = new Product();
             $product->setName("Product $i");
             $product->setDescription("Description $i");
@@ -97,7 +97,7 @@ class AppFixtures extends Fixture
 
         // Create Carts
         $carts = [];
-        for ($i = 1; $i <= 3; $i++) {
+        for ($i = 1; $i <= 3; ++$i) {
             $cart = new Cart();
             $cart->setUser($users[$i - 1]);
             $manager->persist($cart);
@@ -105,7 +105,7 @@ class AppFixtures extends Fixture
         }
 
         // Create CartItems
-        for ($i = 1; $i <= 3; $i++) {
+        for ($i = 1; $i <= 3; ++$i) {
             $cartItem = new CartItem();
             $cartItem->setCart($carts[$i - 1]);
             $cartItem->setProduct($products[$i - 1]);
@@ -115,20 +115,20 @@ class AppFixtures extends Fixture
 
         // Create Orders
         $orders = [];
-        for ($i = 1; $i <= 3; $i++) {
+        for ($i = 1; $i <= 3; ++$i) {
             $order = new Order();
             $order->setUser($users[$i - 1]);
             $order->setBillingAddress($addresses[$i - 1]);
             $order->setShippingAddress($addresses[$i - 1]);
             $order->setTotalPrice(100.0 * $i);
-            $order->setStatus("Delivered");
+            $order->setStatus('Delivered');
             $order->setCreatedAt(new \DateTime());
             $manager->persist($order);
             $orders[] = $order;
         }
 
         // Create OrderItems
-        for ($i = 1; $i <= 3; $i++) {
+        for ($i = 1; $i <= 3; ++$i) {
             $orderItem = new OrderItem();
             $orderItem->setOrder($orders[$i - 1]);
             $orderItem->setProduct($products[$i - 1]);
@@ -138,7 +138,7 @@ class AppFixtures extends Fixture
         }
 
         // Create PaymentMethods
-        for ($i = 1; $i <= 3; $i++) {
+        for ($i = 1; $i <= 3; ++$i) {
             $paymentMethod = new PaymentMethod();
             $paymentMethod->setOwner($users[$i - 1]);
             $paymentMethod->setBillingAddress($addresses[$i - 1]);
@@ -151,7 +151,7 @@ class AppFixtures extends Fixture
         }
 
         // Create Reviews
-        for ($i = 1; $i <= 3; $i++) {
+        for ($i = 1; $i <= 3; ++$i) {
             $review = new Review();
             $review->setOwner($users[$i - 1]);
             $review->setProduct($products[$i - 1]);
@@ -163,18 +163,18 @@ class AppFixtures extends Fixture
 
         // Create feedbacks last, after all users are saved
         $feedbackComments = [
-            "Really impressed with the service! The interface is intuitive and user-friendly.",
-            "Great experience overall. The customer support team was very helpful.",
-            "The booking process was smooth and efficient. Will definitely use again!",
-            "Love how easy it is to find and book spaces. Saved me a lot of time.",
-            "The space I booked exceeded my expectations. Very satisfied with the experience."
+            'Really impressed with the service! The interface is intuitive and user-friendly.',
+            'Great experience overall. The customer support team was very helpful.',
+            'The booking process was smooth and efficient. Will definitely use again!',
+            'Love how easy it is to find and book spaces. Saved me a lot of time.',
+            'The space I booked exceeded my expectations. Very satisfied with the experience.',
         ];
 
         // Add feedbacks for admin and regular users
         $allUsers = array_merge([$adminUser], $users);
         foreach ($allUsers as $user) {
             // Create 2 feedbacks per user
-            for ($i = 0; $i < 2; $i++) {
+            for ($i = 0; $i < 2; ++$i) {
                 $feedback = new Feedback();
                 $feedback->setUser($user);
                 $feedback->setComment($feedbackComments[array_rand($feedbackComments)]);

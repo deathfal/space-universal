@@ -8,8 +8,8 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -81,7 +81,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->paymentMethods = new ArrayCollection();
         $this->reviews = new ArrayCollection();
         $this->orders = new ArrayCollection();
-        $this->createdAt = new \DateTime(); 
+        $this->createdAt = new \DateTime();
     }
 
     public function eraseCredentials(): void
@@ -305,12 +305,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setCart(?Cart $cart): static
     {
         // unset the owning side of the relation if necessary
-        if ($cart === null && $this->cart !== null) {
+        if (null === $cart && null !== $this->cart) {
             $this->cart->setUser(null);
         }
 
         // set the owning side of the relation if necessary
-        if ($cart !== null && $cart->getUser() !== $this) {
+        if (null !== $cart && $cart->getUser() !== $this) {
             $cart->setUser($this);
         }
 

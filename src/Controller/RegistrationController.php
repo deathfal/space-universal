@@ -10,25 +10,23 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
-use Symfony\Component\Mailer\MailerInterface;
 use SymfonyCasts\Bundle\VerifyEmail\VerifyEmailHelperInterface;
 
 class RegistrationController extends AbstractController
 {
-
-
     // public function __construct(VerifyEmailHelperInterface $verifyEmailHelper)
     // {
     //     $this->verifyEmailHelper = $verifyEmailHelper;
     // }
 
-public function __construct(private EmailVerifier $emailVerifier, private VerifyEmailHelperInterface $verifyEmailHelper)
-{
-}
+    public function __construct(private EmailVerifier $emailVerifier, private VerifyEmailHelperInterface $verifyEmailHelper)
+    {
+    }
 
     #[Route('/register', name: 'app_register')]
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager, MailerInterface $mailer): Response
@@ -125,5 +123,4 @@ public function __construct(private EmailVerifier $emailVerifier, private Verify
 
         return $this->redirectToRoute('app_verify_email_sent');
     }
-
 }

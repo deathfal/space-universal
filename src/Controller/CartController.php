@@ -2,12 +2,12 @@
 
 namespace App\Controller;
 
+use App\Repository\ProductRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Response;
-use App\Repository\ProductRepository;
 
 class CartController extends AbstractController
 {
@@ -51,7 +51,7 @@ class CartController extends AbstractController
         $cart = $session->get('cart', []);
 
         if (isset($cart[$id])) {
-            $cart[$id]++;
+            ++$cart[$id];
         }
 
         $session->set('cart', $cart);
@@ -66,7 +66,7 @@ class CartController extends AbstractController
 
         if (isset($cart[$id])) {
             if ($cart[$id] > 1) {
-                $cart[$id]--;
+                --$cart[$id];
             } else {
                 unset($cart[$id]);
             }

@@ -1,33 +1,34 @@
 <?php
+
 // src/Controller/AdminController.php
 
 namespace App\Controller;
 
+use App\Entity\Category;
+use App\Entity\Order;
+use App\Entity\Product;
+use App\Entity\User;
+use App\Repository\CategoryRepository;
+use App\Repository\OrderRepository;
+use App\Repository\ProductRepository;
+use App\Repository\ReviewRepository;
+use App\Repository\UserRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Repository\UserRepository;
-use App\Repository\ProductRepository;
-use App\Repository\OrderRepository;
-use App\Repository\CategoryRepository;
-use App\Repository\ReviewRepository;
-use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\User;
-use App\Entity\Order;
-use App\Entity\Product;
-use App\Entity\Category;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 class AdminController extends AbstractController
 {
     #[Route('/admin', name: 'admin_dashboard')]
     public function dashboard(
-        UserRepository $userRepository, 
-        ProductRepository $productRepository, 
+        UserRepository $userRepository,
+        ProductRepository $productRepository,
         OrderRepository $orderRepository,
-        CategoryRepository $categoryRepository
+        CategoryRepository $categoryRepository,
     ): Response {
         $totalUsers = $userRepository->count([]);
         $totalStock = $productRepository->createQueryBuilder('p')
@@ -220,13 +221,13 @@ class AdminController extends AbstractController
         if ($request->isMethod('POST')) {
             $username = $request->request->get('username');
             $email = $request->request->get('email');
-            $isVerified = $request->request->get('is_verified') === '1';
+            $isVerified = '1' === $request->request->get('is_verified');
 
-            if ($username !== null) {
+            if (null !== $username) {
                 $user->setUsername($username);
             }
 
-            if ($email !== null) {
+            if (null !== $email) {
                 $user->setEmail($email);
             }
 

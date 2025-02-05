@@ -28,6 +28,7 @@ class FeedbackController extends AbstractController
             $entityManager->flush();
 
             $this->addFlash('success', 'Thank you for sharing your feedback!');
+
             return $this->redirectToRoute('app_home');
         }
 
