@@ -26,22 +26,31 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get install -y nodejs && \
     npm install -g npm@latest
 
-# Copy application source
-COPY . /var/www/space-universal
-
-RUN chown -R www-data:www-data /var/www/space-universal \
-    && chmod -R 755 /var/www/space-universal
-    
-# Ensure var directory exists
-RUN mkdir -p /var/www/space-universal/var \
-    && chown -R www-data:www-data /var/www/space-universal/var \
-    && chmod -R 775 /var/www/space-universal/var
+# Copy composer files first
+COPY composer.* symfony.* ./
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# ✅ Install dependencies using Composer (ensure git, zip, and unzip are available)
-RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+# Install dependencies using Composer
+RUN set -eux; \
+    composer install --no-cache --prefer-dist --no-dev --no-autoloader --no-scripts --no-progress
+
+# Copy application source
+COPY . /var/www/space-universal
+
+RUN rm -Rf frankenphp/
+
+RUN chown -R www-data:www-data /var/www/space-universal \
+    && chmod -R 755 /var/www/space-universal
+    
+# Ensure var directory exists and set permissions
+RUN set -eux; \
+    mkdir -p var/cache var/log; \
+    composer dump-autoload --classmap-authoritative --no-dev; \
+    composer dump-env prod; \
+    composer run-script --no-dev post-install-cmd; \
+    chmod +x bin/console; sync
 
 # Install npm dependencies and build assets
 RUN npm install && npm run build
