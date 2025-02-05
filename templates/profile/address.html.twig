@@ -12,32 +12,32 @@
                 <form method="post" action="{{ path('app_profile_address') }}" class="space-y-6">
                     <div>
                         <label for="street" class="block text-sm font-medium text-indigo-300">Rue</label>
-                        <input type="text" id="street" name="street" class="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
+                        <input type="text" id="street" name="street" value="{{ address ? address.street : '' }}" class="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
                     </div>
 
                     <div>
                         <label for="city" class="block text-sm font-medium text-indigo-300">Ville</label>
-                        <input type="text" id="city" name="city" class="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
+                        <input type="text" id="city" name="city" value="{{ address ? address.city : '' }}" class="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
                     </div>
 
                     <div>
                         <label for="postalCode" class="block text-sm font-medium text-indigo-300">Code Postal</label>
-                        <input type="text" id="postalCode" name="postalCode" class="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
+                        <input type="text" id="postalCode" name="postalCode" value="{{ address ? address.postalCode : '' }}" class="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
                     </div>
 
                     <div>
                         <label for="planet" class="block text-sm font-medium text-indigo-300">Planète</label>
-                        <input type="text" id="planet" name="planet" class="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
+                        <input type="text" id="planet" name="planet" value="{{ address ? address.planet : '' }}" class="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
                     </div>
 
                     <div>
                         <label for="galaxy" class="block text-sm font-medium text-indigo-300">Galaxie</label>
-                        <input type="text" id="galaxy" name="galaxy" class="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
+                        <input type="text" id="galaxy" name="galaxy" value="{{ address ? address.galaxy : '' }}" class="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
                     </div>
 
                     <div>
                         <label for="country" class="block text-sm font-medium text-indigo-300">Pays</label>
-                        <input type="text" id="country" name="country" class="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
+                        <input type="text" id="country" name="country" value="{{ address ? address.country : '' }}" class="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
                     </div>
 
                     <div class="flex items-center justify-between">

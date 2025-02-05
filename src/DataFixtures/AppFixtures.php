@@ -67,6 +67,8 @@ class AppFixtures extends Fixture
             $address->setGalaxy("Galaxy $i");
             $address->setCountry("Country $i");
             $address->setCreatedAt(new \DateTime());
+            $address->setUser($users[$i - 1]);
+            $users[$i - 1]->setAddress($address);
             $manager->persist($address);
             $addresses[] = $address;
         }

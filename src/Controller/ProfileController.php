@@ -93,8 +93,14 @@ class ProfileController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
+        $address = $user->getAddress();
+
         if ($request->isMethod('POST')) {
-            $address = new Address();
+            if (!$address) {
+                $address = new Address();
+                $address->setUser($user);
+            }
+            
             $address->setStreet($request->request->get('street'));
             $address->setCity($request->request->get('city'));
             $address->setPostalCode($request->request->get('postalCode'));
@@ -102,15 +108,17 @@ class ProfileController extends AbstractController
             $address->setGalaxy($request->request->get('galaxy'));
             $address->setCountry($request->request->get('country'));
             $address->setCreatedAt(new \DateTime());
-            $address->setUser($user);
 
             $entityManager->persist($address);
             $entityManager->flush();
-            $this->addFlash('success', 'Votre adresse a été ajoutée.');
+            
+            $this->addFlash('success', 'Votre adresse a été mise à jour.');
             return $this->redirectToRoute('app_profile');
         }
 
-        return $this->render('profile/address.html.twig');
+        return $this->render('profile/address.html.twig', [
+            'address' => $address
+        ]);
     }
 
     #[Route('/profile/orders', name: 'app_profile_orders')]
