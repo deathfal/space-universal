@@ -26,3 +26,6 @@ public/img/
 ###> phpstan/phpstan ###
 phpstan.neon
 ###< phpstan/phpstan ###
+
+
+.env.prod

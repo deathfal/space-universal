@@ -31,6 +31,10 @@ jobs:
       - name: Build Frontend Assets
         run: npm run build
 
+      - name: Build Docker images
+        run: |
+          docker compose build apache
+
       - name: Deploy to server
         uses: appleboy/ssh-action@v1.0.0
         with:
@@ -42,7 +46,6 @@ jobs:
             git pull origin master
             
             # Build and restart using compose.yaml
-            docker compose build --no-cache
             docker compose down
             docker compose up -d
             
