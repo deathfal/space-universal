@@ -10,7 +10,7 @@ on:
   workflow_dispatch: ~
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -28,6 +28,8 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /home/adam/space-universal
-            git pull
+            git config --global credential.helper store
+            echo "https://${{ secrets.GT_TOKEN }}@github.com" > ~/.git-credentials
+            git pull origin master
             docker compose build apache
-            docker compose up -d apache
+            docker compose up -d apache database mailer
