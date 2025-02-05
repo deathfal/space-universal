@@ -51,7 +51,7 @@
                     <div id="profile-menu" class="absolute right-0 w-48 py-2 bg-gray-700 rounded-md shadow-xl z-20 hidden">
                         <a href="profile" class="block px-4 py-2 text-sm text-white hover:bg-gray-600">Settings</a>
                         {% if is_granted('ROLE_ADMIN') %}
-                            <a href="admin" class="block px-4 py-2 text-sm text-white hover:bg-gray-600">Admin</a>
+                            <a href="{{ path('admin_dashboard') }}" class="block px-4 py-2 text-sm text-white hover:bg-gray-600">Admin</a>
                         {% endif %}
                         <a href="{{ path('app_logout') }}" class="block px-4 py-2 text-sm text-white hover:bg-gray-600">Logout</a>
                     </div>
