@@ -28,6 +28,14 @@ class WalletController extends AbstractController
         return number_format($sum / $multiplier, $scale, '.', '');
     }
 
+    public static function getUserWallets($user, WalletRepository $walletRepository): array
+    {
+        if (!$user) {
+            return [];
+        }
+        return $walletRepository->findBy(['owner' => $user]);
+    }
+
     #[Route('/', name: 'app_wallet_index')]
     public function index(WalletRepository $walletRepository): Response
     {
