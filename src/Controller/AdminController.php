@@ -23,8 +23,12 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 class AdminController extends AbstractController
 {
     #[Route('/admin', name: 'admin_dashboard')]
-    public function dashboard(UserRepository $userRepository, ProductRepository $productRepository, OrderRepository $orderRepository): Response
-    {
+    public function dashboard(
+        UserRepository $userRepository, 
+        ProductRepository $productRepository, 
+        OrderRepository $orderRepository,
+        CategoryRepository $categoryRepository
+    ): Response {
         $totalUsers = $userRepository->count([]);
         $totalStock = $productRepository->createQueryBuilder('p')
             ->select('SUM(p.stock)')
@@ -36,15 +40,27 @@ class AdminController extends AbstractController
             ->getQuery()
             ->getSingleScalarResult();
 
+        $revenueData = $orderRepository->createQueryBuilder('o')
+            ->select("DATE_TRUNC('month', o.createdAt) as month, SUM(o.totalPrice) as revenue")
+            ->groupBy('month')
+            ->orderBy('month', 'ASC')
+            ->getQuery()
+            ->getResult();
+
+        $productsByCategory = $categoryRepository->createQueryBuilder('c')
+            ->select('c.name as category, COUNT(p.id) as count')
+            ->leftJoin('c.products', 'p')
+            ->groupBy('c.id, c.name')
+            ->getQuery()
+            ->getResult();
+
         $data = [
             'total_revenue' => $totalRevenue,
-            'revenue_increase' => 20.1,
             'total_users' => $totalUsers,
             'products_in_stock' => $totalStock,
             'total_sales' => $totalSales,
-            'sales_increase' => 201,
-            'chart_labels' => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-            'chart_data' => [4000, 3000, 5000, 4500, 6000, 5500],
+            'revenue_data' => $revenueData,
+            'products_by_category' => $productsByCategory,
         ];
 
         return $this->render('admin/dashboard.html.twig', $data);
@@ -84,7 +100,6 @@ class AdminController extends AbstractController
                         $newFilename
                     );
                 } catch (FileException $e) {
-                    // Handle exception if something happens during file upload
                 }
 
                 $product->setImageUrl('img/products/'.$newFilename);
@@ -127,7 +142,6 @@ class AdminController extends AbstractController
                         $newFilename
                     );
                 } catch (FileException $e) {
-                    // Handle exception if something happens during file upload
                 }
 
                 $product->setImageUrl('img/products/'.$newFilename);
@@ -233,7 +247,6 @@ class AdminController extends AbstractController
                             $newFilename
                         );
                     } catch (FileException $e) {
-                        // Handle exception if something happens during file upload
                     }
 
                     $user->setAvatarUrl('img/avatars/'.$newFilename);

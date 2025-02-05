@@ -26,6 +26,9 @@ doctrine:
                 alias: App
         controller_resolver:
             auto_mapping: false
+        dql:
+            datetime_functions:
+                DATE_TRUNC: DoctrineExtensions\Query\Postgresql\DateTrunc
 
 when@test:
     doctrine:
