@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Checkout{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
+    <div class="container mx-auto px-4 py-8 pt-20">
+        <h1 class="text-4xl font-bold mb-8 text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
+            Checkout
+        </h1>
+
+        <form action="{{ path('process_checkout') }}" method="post" class="space-y-6">
+            <div class="bg-gray-800 p-6 rounded-lg shadow-md">
+                <h2 class="text-2xl font-semibold mb-4">Delivery Information</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-400 mb-2">Name</label>
+                        <input type="text" id="name" name="name" value="{{ user.username }}" class="w-full bg-gray-700 border-gray-600 text-white rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm py-2 px-3" required>
+                    </div>
+                    <div>
+                        <label for="street" class="block text-sm font-medium text-gray-400 mb-2">Street</label>
+                        <input type="text" id="street" name="street" value="{{ address.street }}" class="w-full bg-gray-700 border-gray-600 text-white rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm py-2 px-3" required>
+                    </div>
+                    <div>
+                        <label for="city" class="block text-sm font-medium text-gray-400 mb-2">City</label>
+                        <input type="text" id="city" name="city" value="{{ address.city }}" class="w-full bg-gray-700 border-gray-600 text-white rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm py-2 px-3" required>
+                    </div>
+                    <div>
+                        <label for="postal_code" class="block text-sm font-medium text-gray-400 mb-2">Postal Code</label>
+                        <input type="text" id="postal_code" name="postal_code" value="{{ address.postalCode }}" class="w-full bg-gray-700 border-gray-600 text-white rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm py-2 px-3" required>
+                    </div>
+                    <div>
+                        <label for="planet" class="block text-sm font-medium text-gray-400 mb-2">Planet</label>
+                        <input type="text" id="planet" name="planet" value="{{ address.planet }}" class="w-full bg-gray-700 border-gray-600 text-white rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm py-2 px-3" required>
+                    </div>
+                    <div>
+                        <label for="galaxy" class="block text-sm font-medium text-gray-400 mb-2">Galaxy</label>
+                        <input type="text" id="galaxy" name="galaxy" value="{{ address.galaxy }}" class="w-full bg-gray-700 border-gray-600 text-white rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm py-2 px-3" required>
+                    </div>
+                    <div>
+                        <label for="country" class="block text-sm font-medium text-gray-400 mb-2">Country</label>
+                        <input type="text" id="country" name="country" value="{{ address.country }}" class="w-full bg-gray-700 border-gray-600 text-white rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm py-2 px-3" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gray-800 p-6 rounded-lg shadow-md">
+                <h2 class="text-2xl font-semibold mb-4">Payment Information</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label for="card_number" class="block text-sm font-medium text-gray-400 mb-2">Card Number</label>
+                        <input type="text" id="card_number" name="card_number" class="w-full bg-gray-700 border-gray-600 text-white rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm py-2 px-3" required>
+                    </div>
+                    <div>
+                        <label for="expiry_date" class="block text-sm font-medium text-gray-400 mb-2">Expiry Date</label>
+                        <input type="text" id="expiry_date" name="expiry_date" class="w-full bg-gray-700 border-gray-600 text-white rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm py-2 px-3" required>
+                    </div>
+                    <div>
+                        <label for="cvv" class="block text-sm font-medium text-gray-400 mb-2">CVV</label>
+                        <input type="text" id="cvv" name="cvv" class="w-full bg-gray-700 border-gray-600 text-white rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm py-2 px-3" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end">
+                <button type="submit" class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-2 px-4 rounded">
+                    Pay Now
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

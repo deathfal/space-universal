@@ -1,4 +1,3 @@
-{# templates/products/detail.html.twig #}
 {% extends 'base.html.twig' %}
 
 {% block title %}{{ product.name }}{% endblock %}
@@ -41,27 +40,29 @@
                 <p class="text-3xl font-bold text-purple-400">{{ product.price }} UEC</p>
                 <p class="text-gray-300">{{ product.description }}</p>
                 
-                <div class="space-y-4">
-                    <div>
-                        <label for="quantity" class="block text-sm font-medium text-gray-400 mb-2">Quantity</label>
-                        <div class="flex items-center space-x-2">
-                            <button class="bg-gray-700 text-white hover:bg-gray-600 px-2 py-1 rounded">-</button>
-                            <input type="number" id="quantity" name="quantity" value="1" min="1" max="{{ product.stock }}" class="w-20 text-center bg-gray-800 border-gray-700 text-white rounded">
-                            <button class="bg-gray-700 text-white hover:bg-gray-600 px-2 py-1 rounded">+</button>
+                <form action="{{ path('add_to_cart', {'id': product.id}) }}" method="post">
+                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                    <div class="space-y-4">
+                        <div>
+                            <label for="quantity" class="block text-sm font-medium text-gray-400 mb-2">Quantity</label>
+                            <div class="flex items-center space-x-2">
+                                <button type="button" class="bg-gray-700 text-white hover:bg-gray-600 px-2 py-1 rounded">-</button>
+                                <input type="number" id="quantity" name="quantity" value="1" min="1" max="{{ product.stock }}" class="w-20 text-center bg-gray-800 border-gray-700 text-white rounded">
+                                <button type="button" class="bg-gray-700 text-white hover:bg-gray-600 px-2 py-1 rounded">+</button>
+                            </div>
                         </div>
                     </div>
-                </div>
-
-                <div class="flex space-x-4">
-                    <button class="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-2 px-4 rounded">
-                        Add to Cart
-                    </button>
-                    <button class="bg-gray-700 text-white hover:bg-gray-600 p-2 rounded">
-                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                        </svg>
-                    </button>
-                </div>
+                    <div class="flex space-x-4">
+                        <button type="submit" class="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-2 px-4 rounded">
+                            Add to Cart
+                        </button>
+                        <button type="button" class="bg-gray-700 text-white hover:bg-gray-600 p-2 rounded">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                            </svg>
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
 

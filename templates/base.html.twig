@@ -43,6 +43,14 @@
             </a>
         </div>
         <div class="flex justify-end w-full gap-4 items-center">
+                    <li>
+                        <a href="{{ path('shopping_basket') }}" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.4 7h13.8L17 13M7 13h10" />
+                            </svg>
+                            Cart
+                        </a>
+                    </li>
             {% if app.user %}
                 <div class="relative">
                     <button id="profile-menu-button" class="flex items-center focus:outline-none">
