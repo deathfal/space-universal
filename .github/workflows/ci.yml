@@ -37,6 +37,10 @@ jobs:
             echo "Resetting to origin/master..."
             git reset --hard origin/master
             
+            # Build and start containers
+            docker compose build apache
+            docker compose up -d apache database mailer
+            
             # Fix permissions using docker
             echo "Fixing permissions..."
             docker compose exec -T apache chown -R www-data:www-data /var/www/space-universal
@@ -44,10 +48,6 @@ jobs:
             docker compose exec -T apache find /var/www/space-universal -type d -exec chmod 755 {} \;
             docker compose exec -T apache chmod -R 777 /var/www/space-universal/var
             docker compose exec -T apache chmod -R 777 /var/www/space-universal/public
-            
-            # Build and start containers
-            docker compose build apache
-            docker compose up -d apache database mailer
             
             # Clear cache and warmup
             echo "Clearing cache..."
@@ -58,4 +58,4 @@ jobs:
             echo "Running migrations..."
             docker compose exec -T apache php bin/console doctrine:migrations:migrate --no-interaction
             echo "Loading fixtures..."
-            docker compose exec -T apache php bin/console doctrine:fixtures:load --no-interaction
+            docker compose exec -T apache php bin/console doctrine:fixtures:load --no-interaction --append

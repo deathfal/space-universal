@@ -1,5 +1,5 @@
 # Use the official PHP image with Apache
-FROM php:8.3-apache
+FROM php:8.3-apache AS symfony_php
 
 # Set the working directory
 WORKDIR /var/www/space-universal
@@ -33,9 +33,9 @@ COPY composer.* symfony.* ./
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Install dependencies using Composer
-RUN set -eux; \
-    composer require doctrine/doctrine-fixtures-bundle; \
-    composer install --no-cache --prefer-dist --no-dev --no-autoloader --no-scripts --no-progress
+RUN composer config extra.symfony.allow-contrib true \
+    && composer require --no-scripts doctrine/doctrine-fixtures-bundle \
+    && composer install --prefer-dist --no-dev --no-autoloader --no-scripts --no-progress
 
 # Copy application source
 COPY . /var/www/space-universal
