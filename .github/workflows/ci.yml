@@ -28,6 +28,13 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /home/adam/space-universal
-            git pull
+            echo "Current git status:"
+            git status
+            echo "Current branch:"
+            git branch
+            echo "Fetching updates..."
+            git fetch origin master
+            echo "Resetting to origin/master..."
+            git reset --hard origin/master
             docker compose build apache
             docker compose up -d apache database mailer
