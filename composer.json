@@ -68,7 +68,8 @@
         ],
         "post-update-cmd": [
             "@auto-scripts"
-        ]
+        ],
+        "phpstan": "phpstan analyse -c phpstan.neon"
     },
     "conflict": {
         "symfony/symfony": "*"
@@ -82,6 +83,9 @@
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^4.0",
+        "phpstan/phpstan": "^2.1",
+        "phpstan/phpstan-doctrine": "^2.0",
+        "phpstan/phpstan-symfony": "^2.0",
         "symfony/maker-bundle": "^1.62"
     }
 }

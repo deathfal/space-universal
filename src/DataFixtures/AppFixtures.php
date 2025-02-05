@@ -12,6 +12,7 @@ use App\Entity\PaymentMethod;
 use App\Entity\Product;
 use App\Entity\Review;
 use App\Entity\User;
+use App\Entity\Feedback;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -19,6 +20,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 class AppFixtures extends Fixture
 {
     private UserPasswordHasherInterface $passwordHasher;
+    private ObjectManager $manager;
 
     public function __construct(UserPasswordHasherInterface $passwordHasher)
     {
@@ -27,6 +29,8 @@ class AppFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
+        $this->manager = $manager;
+
         // Create Admin User
         $adminUser = new User();
         $adminUser->setEmail('admin@example.com');
@@ -45,10 +49,12 @@ class AppFixtures extends Fixture
             $user->setRoles(['ROLE_USER']);
             $hashedPassword = $this->passwordHasher->hashPassword($user, "password$i");
             $user->setPassword($hashedPassword);
-            // Mot de passe en clair : password$i (exemple : password1, password2, password3)
             $manager->persist($user);
             $users[] = $user;
         }
+
+        // Flush users first to ensure they have IDs
+        $manager->flush();
 
         // Create Addresses
         $addresses = [];
@@ -153,6 +159,27 @@ class AppFixtures extends Fixture
             $review->setComment("Comment $i");
             $review->setCreatedAt(new \DateTime());
             $manager->persist($review);
+        }
+
+        // Create feedbacks last, after all users are saved
+        $feedbackComments = [
+            "Really impressed with the service! The interface is intuitive and user-friendly.",
+            "Great experience overall. The customer support team was very helpful.",
+            "The booking process was smooth and efficient. Will definitely use again!",
+            "Love how easy it is to find and book spaces. Saved me a lot of time.",
+            "The space I booked exceeded my expectations. Very satisfied with the experience."
+        ];
+
+        // Add feedbacks for admin and regular users
+        $allUsers = array_merge([$adminUser], $users);
+        foreach ($allUsers as $user) {
+            // Create 2 feedbacks per user
+            for ($i = 0; $i < 2; $i++) {
+                $feedback = new Feedback();
+                $feedback->setUser($user);
+                $feedback->setComment($feedbackComments[array_rand($feedbackComments)]);
+                $manager->persist($feedback);
+            }
         }
 
         $manager->flush();
