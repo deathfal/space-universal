@@ -46,6 +46,10 @@ class Address
     #[ORM\OneToMany(targetEntity: Order::class, mappedBy: 'shippingAddress')]
     private Collection $shippingOrders;
 
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'addresses')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
+
     public function __construct()
     {
         $this->billingOrders = new ArrayCollection();
@@ -209,6 +213,18 @@ class Address
                 $order->setShippingAddress(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
 
         return $this;
     }
