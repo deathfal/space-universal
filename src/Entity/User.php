@@ -15,7 +15,6 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 #[ORM\Table(name: '`user`')]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 
-// Symfony\Component\Security\Core\User\UserInterface
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -86,13 +85,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function eraseCredentials(): void
     {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
+
     }
 
     public function getUserIdentifier(): string
     {
-        // Use email as the unique user identifier
         return $this->email;
     }
 
@@ -164,7 +161,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
         $roles[] = 'ROLE_USER';
 
         return array_unique($roles);
@@ -198,7 +194,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removePaymentMethod(PaymentMethod $paymentMethod): static
     {
         if ($this->paymentMethods->removeElement($paymentMethod)) {
-            // set the owning side to null (unless already changed)
             if ($paymentMethod->getOwner() === $this) {
                 $paymentMethod->setOwner(null);
             }
@@ -228,7 +223,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeReview(Review $review): static
     {
         if ($this->reviews->removeElement($review)) {
-            // set the owning side to null (unless already changed)
             if ($review->getOwner() === $this) {
                 $review->setOwner(null);
             }
@@ -258,7 +252,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeOrder(Order $order): static
     {
         if ($this->orders->removeElement($order)) {
-            // set the owning side to null (unless already changed)
             if ($order->getUser() === $this) {
                 $order->setUser(null);
             }
@@ -304,12 +297,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function setCart(?Cart $cart): static
     {
-        // unset the owning side of the relation if necessary
         if ($cart === null && $this->cart !== null) {
             $this->cart->setUser(null);
         }
 
-        // set the owning side of the relation if necessary
         if ($cart !== null && $cart->getUser() !== $this) {
             $cart->setUser($this);
         }
