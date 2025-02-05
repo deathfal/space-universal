@@ -50,7 +50,7 @@
                         <img src="{{ asset(app.user.avatarUrl ?: 'img/avatars/default_avatar.png') }}" alt="Avatar" class="w-10 h-10 rounded-full">
                     </button>
                     <div id="profile-menu" class="absolute right-0 w-48 py-2 bg-gray-700 rounded-md shadow-xl z-20 hidden">
-                        <a href="profile" class="block px-4 py-2 text-sm text-white hover:bg-gray-600">Settings</a>
+                        <a href="{{ path('app_profile') }}" class="block px-4 py-2 text-sm text-white hover:bg-gray-600">Settings</a>
                         {% if is_granted('ROLE_ADMIN') %}
                             <a href="{{ path('admin_dashboard') }}" class="block px-4 py-2 text-sm text-white hover:bg-gray-600">Admin</a>
                         {% endif %}

@@ -98,16 +98,17 @@ class ProfileController extends AbstractController
         if ($request->isMethod('POST')) {
             if (!$address) {
                 $address = new Address();
+                $user->setAddress($address);
                 $address->setUser($user);
             }
             
-            $address->setStreet($request->request->get('street'));
-            $address->setCity($request->request->get('city'));
-            $address->setPostalCode($request->request->get('postalCode'));
-            $address->setPlanet($request->request->get('planet'));
-            $address->setGalaxy($request->request->get('galaxy'));
-            $address->setCountry($request->request->get('country'));
-            $address->setCreatedAt(new \DateTime());
+            $address->setStreet($request->request->get('street'))
+                   ->setCity($request->request->get('city'))
+                   ->setPostalCode($request->request->get('postalCode'))
+                   ->setPlanet($request->request->get('planet'))
+                   ->setGalaxy($request->request->get('galaxy'))
+                   ->setCountry($request->request->get('country'))
+                   ->setCreatedAt(new \DateTime());
 
             $entityManager->persist($address);
             $entityManager->flush();

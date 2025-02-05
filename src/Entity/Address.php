@@ -46,8 +46,8 @@ class Address
     #[ORM\OneToMany(targetEntity: Order::class, mappedBy: 'shippingAddress')]
     private Collection $shippingOrders;
 
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'addresses')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\OneToOne(inversedBy: 'address', targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?User $user = null;
 
     public function __construct()

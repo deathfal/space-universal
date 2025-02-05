@@ -58,17 +58,16 @@ class AppFixtures extends Fixture
 
         // Create Addresses
         $addresses = [];
-        for ($i = 1; $i <= 3; $i++) {
+        foreach ($users as $index => $user) {
             $address = new Address();
-            $address->setStreet("Street $i");
-            $address->setCity("City $i");
-            $address->setPostalCode("PostalCode $i");
-            $address->setPlanet("Planet $i");
-            $address->setGalaxy("Galaxy $i");
-            $address->setCountry("Country $i");
+            $address->setStreet("Street " . ($index + 1));
+            $address->setCity("City " . ($index + 1));
+            $address->setPostalCode("PostalCode " . ($index + 1));
+            $address->setPlanet("Planet " . ($index + 1));
+            $address->setGalaxy("Galaxy " . ($index + 1));
+            $address->setCountry("Country " . ($index + 1));
             $address->setCreatedAt(new \DateTime());
-            $address->setUser($users[$i - 1]);
-            $users[$i - 1]->setAddress($address);
+            $address->setUser($user);
             $manager->persist($address);
             $addresses[] = $address;
         }
