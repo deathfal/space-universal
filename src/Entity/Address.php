@@ -178,7 +178,6 @@ class Address
     public function removeBillingOrder(Order $order): static
     {
         if ($this->billingOrders->removeElement($order)) {
-            // set the owning side to null (unless already changed)
             if ($order->getBillingAddress() === $this) {
                 $order->setBillingAddress(null);
             }
@@ -208,7 +207,7 @@ class Address
     public function removeShippingOrder(Order $order): static
     {
         if ($this->shippingOrders->removeElement($order)) {
-            // set the owning side to null (unless already changed)
+
             if ($order->getShippingAddress() === $this) {
                 $order->setShippingAddress(null);
             }
