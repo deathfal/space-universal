@@ -67,6 +67,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Feedback::class, orphanRemoval: true)]
     private Collection $feedbacks;
 
+    /**
+     * @var Collection<int, Wallet>
+     */
+    #[ORM\OneToMany(targetEntity: Wallet::class, mappedBy: 'owner', orphanRemoval: true)]
+    private Collection $wallets;
+
     #[ORM\OneToOne(targetEntity: Cart::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
     private ?Cart $cart = null;
 
@@ -79,6 +85,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->paymentMethods = new ArrayCollection();
         $this->reviews = new ArrayCollection();
         $this->orders = new ArrayCollection();
+        $this->wallets = new ArrayCollection();
         $this->createdAt = new \DateTime(); 
     }
 
@@ -283,6 +290,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($feedback->getUser() === $this) {
                 $feedback->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Wallet>
+     */
+    public function getWallets(): Collection
+    {
+        return $this->wallets;
+    }
+
+    public function addWallet(Wallet $wallet): static
+    {
+        if (!$this->wallets->contains($wallet)) {
+            $this->wallets->add($wallet);
+            $wallet->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeWallet(Wallet $wallet): static
+    {
+        if ($this->wallets->removeElement($wallet)) {
+            if ($wallet->getOwner() === $this) {
+                $wallet->setOwner(null);
             }
         }
 
