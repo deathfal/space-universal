@@ -36,5 +36,23 @@ jobs:
             git fetch origin master
             echo "Resetting to origin/master..."
             git reset --hard origin/master
+            
+            # Fix permissions
+            echo "Fixing permissions..."
+            sudo chown www-data:www-data -R .
+            sudo find . -type f -exec chmod 644 {} \;
+            sudo find . -type d -exec chmod 755 {} \;
+            sudo chmod -R 777 var/
+            sudo chmod -R 777 public/
+            
+            # Build and start containers
             docker compose build apache
             docker compose up -d apache database mailer
+            
+            # Clear cache and warmup
+            echo "Clearing cache..."
+            docker compose exec -T apache php bin/console cache:clear
+            docker compose exec -T apache php bin/console cache:warmup
+            echo "Loading fixtures..."
+            docker compose exec -T apache php bin/console doctrine:fixtures:load
+
