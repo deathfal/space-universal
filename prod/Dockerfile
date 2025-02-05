@@ -34,6 +34,7 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Install dependencies using Composer
 RUN set -eux; \
+    composer require doctrine/doctrine-fixtures-bundle; \
     composer install --no-cache --prefer-dist --no-dev --no-autoloader --no-scripts --no-progress
 
 # Copy application source
