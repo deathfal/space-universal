@@ -28,10 +28,10 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /home/adam/space-universal
-            echo "Current git status:"
-            git status
-            echo "Current branch:"
-            git branch
+            echo "Switching to SSH remote..."
+            git remote set-url origin git@github.com:deathfal/space-universal.git
+            echo "Current remote URL:"
+            git remote -v
             echo "Fetching updates..."
             git fetch origin master
             echo "Resetting to origin/master..."
