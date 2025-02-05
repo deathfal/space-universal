@@ -27,7 +27,7 @@ class CartController extends AbstractController
 
         $session->set('cart', $cart);
 
-        return $this->redirectToRoute('shopping_basket');
+        return $this->redirectToRoute('app_shopping_basket');
     }
 
     #[Route('/cart/remove', name: 'app_cart_remove', methods: ['POST'])]
@@ -42,7 +42,7 @@ class CartController extends AbstractController
 
         $session->set('cart', $cart);
 
-        return $this->redirectToRoute('shopping_basket');
+        return $this->redirectToRoute('app_shopping_basket');
     }
 
     #[Route('/cart/increase/{id}', name: 'app_cart_increase')]
@@ -56,7 +56,7 @@ class CartController extends AbstractController
 
         $session->set('cart', $cart);
 
-        return $this->redirectToRoute('shopping_basket');
+        return $this->redirectToRoute('app_shopping_basket');
     }
 
     #[Route('/cart/decrease/{id}', name: 'app_cart_decrease')]
@@ -74,7 +74,7 @@ class CartController extends AbstractController
 
         $session->set('cart', $cart);
 
-        return $this->redirectToRoute('shopping_basket');
+        return $this->redirectToRoute('app_shopping_basket');
     }
 
     #[Route('/add-to-cart/{id}', name: 'add_to_cart')]
@@ -91,6 +91,15 @@ class CartController extends AbstractController
 
         $session->set('cart', $cart);
 
-        return $this->redirectToRoute('shopping_basket');
+        return $this->redirectToRoute('app_shopping_basket');
+    }
+
+    #[Route('/cart/clear', name: 'app_cart_clear', methods: ['POST'])]
+    public function clear(SessionInterface $session): Response
+    {
+        $session->remove('cart');
+        
+        $this->addFlash('success', 'Votre panier a été vidé');
+        return $this->redirectToRoute('app_shopping_basket');
     }
 }
