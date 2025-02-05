@@ -18,7 +18,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class TestFeedbackCommand extends Command
 {
     public function __construct(
-        private EntityManagerInterface $entityManager
+        private EntityManagerInterface $entityManager,
     ) {
         parent::__construct();
     }
@@ -29,9 +29,10 @@ class TestFeedbackCommand extends Command
 
         // Get the first user
         $user = $this->entityManager->getRepository(User::class)->findOneBy([]);
-        
+
         if (!$user) {
             $io->error('No users found in database');
+
             return Command::FAILURE;
         }
 
@@ -40,15 +41,16 @@ class TestFeedbackCommand extends Command
             $feedback = new Feedback();
             $feedback->setUser($user);
             $feedback->setComment('Test feedback from command');
-            
+
             $this->entityManager->persist($feedback);
             $this->entityManager->flush();
-            
-            $io->success('Feedback created successfully with ID: ' . $feedback->getId());
-            
+
+            $io->success('Feedback created successfully with ID: '.$feedback->getId());
+
             return Command::SUCCESS;
         } catch (\Exception $e) {
-            $io->error('Error creating feedback: ' . $e->getMessage());
+            $io->error('Error creating feedback: '.$e->getMessage());
+
             return Command::FAILURE;
         }
     }
