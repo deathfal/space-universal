@@ -19,7 +19,6 @@ final class Version20250205212438 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('DROP INDEX idx_d4e6f81a76ed395');
         $this->addSql('ALTER TABLE address ALTER user_id DROP NOT NULL');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_D4E6F81A76ED395 ON address (user_id)');
@@ -30,7 +29,6 @@ final class Version20250205212438 extends AbstractMigration
 
     public function down(Schema $schema): void
     {
-        // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('CREATE SCHEMA public');
         $this->addSql('ALTER TABLE "user" ADD address_id INT DEFAULT NULL');
         $this->addSql('ALTER TABLE "user" ADD CONSTRAINT fk_8d93d649f5b7af75 FOREIGN KEY (address_id) REFERENCES address (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
