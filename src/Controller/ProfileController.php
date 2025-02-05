@@ -17,6 +17,7 @@ use App\Form\PaymentMethodType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
 class ProfileController extends AbstractController
 {
@@ -42,6 +43,9 @@ class ProfileController extends AbstractController
         }
 
         if ($request->isMethod('POST')) {
+            if (!$user instanceof User) {
+                throw new \RuntimeException('User object is not an instance of App\Entity\User. Actual type: ' . get_class($user));
+            }
             $user->setUsername($request->request->get('username'));
             $user->setEmail($request->request->get('email'));
 
@@ -89,7 +93,7 @@ class ProfileController extends AbstractController
     public function address(Request $request, EntityManagerInterface $entityManager): Response
     {
         $user = $this->getUser();
-        if (!$user) {
+        if (!$user instanceof User) {
             return $this->redirectToRoute('app_login');
         }
 
@@ -140,10 +144,12 @@ class ProfileController extends AbstractController
     #[Route('/profile/payment-methods', name: 'app_profile_payment_methods')]
     public function paymentMethods(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $user = $this->getUser();
-        if (!$user) {
+        $currentUser = $this->getUser();
+        if (!$currentUser) {
             return $this->redirectToRoute('app_login');
         }
+
+        $user = $currentUser;
 
         if ($request->isMethod('POST')) {
             $paymentMethod = new PaymentMethod();
@@ -153,6 +159,15 @@ class ProfileController extends AbstractController
             $paymentMethod->setPaymentType($request->request->get('paymentType'));
             $paymentMethod->setOwner($user);
             $paymentMethod->setCreatedAt(new \DateTime());
+
+            // Get the user's address
+            $address = $user->getAddress();
+            if (!$address) {
+                $this->addFlash('error', 'Vous devez d\'abord ajouter une adresse avant de pouvoir ajouter une méthode de paiement.');
+                return $this->redirectToRoute('app_profile_address');
+            }
+
+            $paymentMethod->setBillingAddress($address);
 
             $entityManager->persist($paymentMethod);
             $entityManager->flush();
