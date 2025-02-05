@@ -28,8 +28,6 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /home/adam/space-universal
-            git config --global credential.helper store
-            echo "https://${{ secrets.GT_TOKEN }}@github.com" > ~/.git-credentials
-            git pull origin master
+            git pull
             docker compose build apache
             docker compose up -d apache database mailer
