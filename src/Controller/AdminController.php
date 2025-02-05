@@ -73,7 +73,7 @@ class AdminController extends AbstractController
             $product->setCreatedAt(new \DateTime());
 
             $imageFile = $request->files->get('image');
-            if ($imageFile) {
+            if ($imageFile && $imageFile->isValid()) {
                 $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
                 $safeFilename = $slugger->slug($originalFilename);
                 $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
@@ -116,7 +116,7 @@ class AdminController extends AbstractController
             $product->setOriginPlanet($request->request->get('origin_planet'));
 
             $imageFile = $request->files->get('image');
-            if ($imageFile) {
+            if ($imageFile && $imageFile->isValid()) {
                 $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
                 $safeFilename = $slugger->slug($originalFilename);
                 $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
