@@ -38,7 +38,7 @@ jobs:
             git reset --hard origin/master
             
             # Build and start containers
-            docker compose build apache
+            docker compose build apache fixtures
             docker compose up -d apache database mailer
             
             # Fix permissions using docker
@@ -58,4 +58,4 @@ jobs:
             echo "Running migrations..."
             docker compose exec -T apache php bin/console doctrine:migrations:migrate --no-interaction
             echo "Loading fixtures..."
-            docker compose exec -T apache php bin/console doctrine:fixtures:load --no-interaction --append
+            docker compose run --rm fixtures php bin/console doctrine:fixtures:load --no-interaction --append

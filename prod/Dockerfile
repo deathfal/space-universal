@@ -33,9 +33,7 @@ COPY composer.* symfony.* ./
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Install dependencies using Composer
-RUN composer config extra.symfony.allow-contrib true \
-    && composer require --no-scripts doctrine/doctrine-fixtures-bundle \
-    && composer install --prefer-dist --no-dev --no-autoloader --no-scripts --no-progress
+RUN composer install --prefer-dist --no-dev --no-autoloader --no-scripts --no-progress
 
 # Copy application source
 COPY . /var/www/space-universal
@@ -67,6 +65,13 @@ RUN sed -i '/DocumentRoot/a <Directory /var/www/space-universal/public>\nAllowOv
 
 
 RUN echo "ServerName cosmic-bazaar.sector18.quest" >> /etc/apache2/apache2.conf
+
+# Create fixtures stage
+FROM symfony_php AS fixtures
+
+# Install dev dependencies including fixtures
+RUN composer install --prefer-dist --no-scripts \
+    && composer require --dev doctrine/doctrine-fixtures-bundle
 
 # Expose port 80
 EXPOSE 80
