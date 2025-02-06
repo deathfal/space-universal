@@ -88,15 +88,6 @@ services:
     depends_on:
       - database
 
-  fixtures:
-    build:
-      context: .
-      dockerfile: prod/Dockerfile
-      target: fixtures
-    volumes:
-      - .:/var/www/space-universal
-    depends_on:
-      - database
 
   composer:
     image: composer:2
