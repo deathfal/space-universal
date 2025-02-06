@@ -71,3 +71,40 @@
     }
 </style>
 {% endblock %}
+
+{% block navigation %}
+    <nav class="bg-gray-800 p-6">
+        <ul>
+            <li>
+                <a href="{{ path('app_profile_address') }}" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                    <i class="fas fa-map-marker-alt mr-3 text-gray-400 group-hover:text-gray-500"></i>
+                    Adresses Cosmiques
+                </a>
+            </li>
+            <li>
+                <a href="{{ path('app_profile_orders') }}" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                    <i class="fas fa-shopping-cart mr-3 text-gray-400 group-hover:text-gray-500"></i>
+                    Commandes
+                </a>
+            </li>
+            <li>
+                <a href="{{ path('app_profile_payment_methods') }}" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                    <i class="fas fa-credit-card mr-3 text-gray-400 group-hover:text-gray-500"></i>
+                    Payment Methods
+                </a>
+            </li>
+            <li>
+                <a href="{{ path('app_wallet_index') }}" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                    <i class="fas fa-wallet mr-3 text-gray-400 group-hover:text-gray-500"></i>
+                    My Wallets
+                </a>
+            </li>
+            <li>
+                <a href="{{ path('app_profile_reviews') }}" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                    <i class="fas fa-star mr-3 text-gray-400 group-hover:text-gray-500"></i>
+                    Avis
+                </a>
+            </li>
+        </ul>
+    </nav>
+{% endblock %}

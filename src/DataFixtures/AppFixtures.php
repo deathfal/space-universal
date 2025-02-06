@@ -58,6 +58,21 @@ class AppFixtures extends Fixture
 
         // Create Addresses
         $addresses = [];
+        
+        // Create address for admin
+        $adminAddress = new Address();
+        $adminAddress->setStreet("Admin Street");
+        $adminAddress->setCity("Admin City");
+        $adminAddress->setPostalCode("Admin PostalCode");
+        $adminAddress->setPlanet("Admin Planet");
+        $adminAddress->setGalaxy("Admin Galaxy");
+        $adminAddress->setCountry("Admin Country");
+        $adminAddress->setCreatedAt(new \DateTime());
+        $adminAddress->setUser($adminUser);
+        $manager->persist($adminAddress);
+        $addresses[] = $adminAddress;
+
+        // Create addresses for regular users
         foreach ($users as $index => $user) {
             $address = new Address();
             $address->setStreet("Street " . ($index + 1));
@@ -71,6 +86,9 @@ class AppFixtures extends Fixture
             $manager->persist($address);
             $addresses[] = $address;
         }
+
+        // Flush addresses to ensure they have IDs
+        $manager->flush();
 
         // Create Categories
         $categories = [];
@@ -119,8 +137,8 @@ class AppFixtures extends Fixture
         for ($i = 1; $i <= 3; $i++) {
             $order = new Order();
             $order->setUser($users[$i - 1]);
-            $order->setBillingAddress($addresses[$i - 1]);
-            $order->setShippingAddress($addresses[$i - 1]);
+            $order->setBillingAddress($addresses[$i]);
+            $order->setShippingAddress($addresses[$i]);
             $order->setTotalPrice(100.0 * $i);
             $order->setStatus("Delivered");
             $order->setCreatedAt(new \DateTime());
@@ -139,14 +157,15 @@ class AppFixtures extends Fixture
         }
 
         // Create PaymentMethods
-        for ($i = 1; $i <= 3; $i++) {
+        $allUsers = array_merge([$adminUser], $users);
+        foreach ($allUsers as $index => $user) {
             $paymentMethod = new PaymentMethod();
-            $paymentMethod->setOwner($users[$i - 1]);
-            $paymentMethod->setBillingAddress($addresses[$i - 1]);
-            $paymentMethod->setCardNumber("123456789012345$i");
-            $paymentMethod->setExpiryDate("12/2$i");
-            $paymentMethod->setCardholderName("Cardholder $i");
-            $paymentMethod->setPaymentType("Type $i");
+            $paymentMethod->setOwner($user);
+            $paymentMethod->setBillingAddress($addresses[$index]);
+            $paymentMethod->setCardNumber("123456789012345" . ($index + 1));
+            $paymentMethod->setExpiryDate("12/2" . ($index + 1));
+            $paymentMethod->setCardholderName("Cardholder " . ($index + 1));
+            $paymentMethod->setPaymentType("Type " . ($index + 1));
             $paymentMethod->setCreatedAt(new \DateTime());
             $manager->persist($paymentMethod);
         }

@@ -40,4 +40,16 @@ class UserRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+
+    public function findOneWithAddress(int $id): ?User
+    {
+        return $this->createQueryBuilder('u')
+            ->leftJoin('u.address', 'a')
+            ->addSelect('a')
+            ->andWhere('u.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
 }

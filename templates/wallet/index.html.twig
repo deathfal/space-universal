@@ -1,0 +1,131 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}My Wallets{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-8">My Wallets</h1>
+
+    {# Display current wallets #}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        {% for wallet in wallets %}
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold">{{ wallet.currency }}</h2>
+                    <span class="text-gray-500">Balance</span>
+                </div>
+                <p class="text-2xl font-bold">{{ wallet.balance|format_balance(wallet.currency) }}</p>
+                <p class="text-sm text-gray-500 mt-2">Last updated: {{ wallet.updatedAt ? wallet.updatedAt|date('Y-m-d H:i:s') : wallet.createdAt|date('Y-m-d H:i:s') }}</p>
+            </div>
+        {% else %}
+            <div class="col-span-full">
+                <p class="text-gray-500">You don't have any wallets yet. Buy some currency to get started!</p>
+            </div>
+        {% endfor %}
+    </div>
+
+    {# Buy currency form #}
+    <div class="bg-white rounded-lg shadow-md p-6 max-w-2xl mx-auto">
+        <h2 class="text-2xl font-bold mb-6">Buy Currency</h2>
+
+        {% if payment_methods|length > 0 %}
+            <form id="buyForm" action="{{ path('app_wallet_buy') }}" method="POST" class="space-y-6">
+                <div>
+                    <label for="amount" class="block text-sm font-medium text-gray-700">Amount</label>
+                    <input type="number" step="0.00000001" min="0" name="amount" id="amount" required
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                </div>
+
+                <div>
+                    <label for="currency" class="block text-sm font-medium text-gray-700">Currency</label>
+                    <select name="currency" id="currency" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <option value="USD">USD</option>
+                        <option value="EUR">EUR</option>
+                        <option value= "SPACE-COINS">SPACE-COINS</option>
+
+                    </select>
+                </div>
+
+                <div>
+                    <label for="payment_method" class="block text-sm font-medium text-gray-700">Payment Method</label>
+                    <select name="payment_method" id="payment_method" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        {% for method in payment_methods %}
+                            <option value="{{ method.id }}">
+                                {{ method.paymentType }} - {{ method.cardholderName }} (**** {{ method.cardNumber|slice(-4) }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <button type="submit"
+                        class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Buy Currency
+                </button>
+            </form>
+
+            {# Toast Container #}
+            <div id="toast-container" class="fixed bottom-4 right-4 z-50"></div>
+
+            <script>
+                document.getElementById('buyForm').addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    fetch(this.action, {
+                        method: 'POST',
+                        body: new FormData(this),
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showToast(data.message, 'success');
+                            // Reload the page after a short delay to show updated balances
+                            setTimeout(() => window.location.reload(), 1500);
+                        } else {
+                            showToast(data.error, 'error');
+                        }
+                    })
+                    .catch(error => {
+                        showToast('An error occurred while processing your request', 'error');
+                    });
+                });
+
+                function showToast(message, type) {
+                    const toast = document.createElement('div');
+                    toast.className = `${type === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white px-6 py-4 rounded-lg shadow-lg mb-4 transition-opacity duration-300`;
+                    toast.textContent = message;
+                    
+                    const container = document.getElementById('toast-container');
+                    container.appendChild(toast);
+                    
+                    // Fade out and remove after 3 seconds
+                    setTimeout(() => {
+                        toast.style.opacity = '0';
+                        setTimeout(() => toast.remove(), 300);
+                    }, 3000);
+                }
+
+                // Show flash messages as toasts if they exist
+                {% for message in app.flashes('success') %}
+                    showToast('{{ message }}', 'success');
+                {% endfor %}
+                {% for message in app.flashes('error') %}
+                    showToast('{{ message }}', 'error');
+                {% endfor %}
+            </script>
+        {% else %}
+            <div class="text-center py-4">
+                <p class="text-gray-500 mb-4">You need to add a payment method before you can buy currency.</p>
+                <a href="{{ path('app_profile_payment_methods') }}"
+                   class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Add Payment Method
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
