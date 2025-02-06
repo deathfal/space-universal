@@ -38,8 +38,12 @@ jobs:
             git reset --hard origin/master
             
             # Build and start containers
-            docker compose build apache fixtures
+            docker compose build apache
             docker compose up -d apache database mailer
+            
+            # Wait for database to be ready
+            echo "Waiting for database to be ready..."
+            sleep 5
             
             # Fix permissions using docker
             echo "Fixing permissions..."
@@ -53,6 +57,11 @@ jobs:
             echo "Clearing cache..."
             docker compose exec -T apache php bin/console cache:clear
             docker compose exec -T apache php bin/console cache:warmup
+            
+            # Create/update database schema
+            echo "Creating database schema..."
+            docker compose exec -T apache php bin/console doctrine:schema:drop --force --full-database
+            docker compose exec -T apache php bin/console doctrine:schema:create
             
             # Run migrations and load fixtures
             echo "Running migrations..."
