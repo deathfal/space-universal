@@ -1,5 +1,5 @@
 # Use the official PHP image with Apache
-FROM php:8.3-apache
+FROM php:8.3-apache AS symfony_php
 
 # Set the working directory
 WORKDIR /var/www/space-universal
@@ -26,22 +26,30 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get install -y nodejs && \
     npm install -g npm@latest
 
-# Copy application source
-COPY . /var/www/space-universal
-
-RUN chown -R www-data:www-data /var/www/space-universal \
-    && chmod -R 755 /var/www/space-universal
-    
-# Ensure var directory exists
-RUN mkdir -p /var/www/space-universal/var \
-    && chown -R www-data:www-data /var/www/space-universal/var \
-    && chmod -R 775 /var/www/space-universal/var
+# Copy composer files first
+COPY composer.* symfony.* ./
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# ✅ Install dependencies using Composer (ensure git, zip, and unzip are available)
-RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+# Install dependencies using Composer
+RUN composer install --prefer-dist --no-dev --no-autoloader --no-scripts --no-progress
+
+# Copy application source
+COPY . /var/www/space-universal
+
+RUN rm -Rf frankenphp/
+
+RUN chown -R www-data:www-data /var/www/space-universal \
+    && chmod -R 755 /var/www/space-universal
+    
+# Ensure var directory exists and set permissions
+RUN set -eux; \
+    mkdir -p var/cache var/log; \
+    composer dump-autoload --classmap-authoritative --no-dev; \
+    composer dump-env prod; \
+    composer run-script --no-dev post-install-cmd; \
+    chmod +x bin/console; sync
 
 # Install npm dependencies and build assets
 RUN npm install && npm run build
@@ -57,6 +65,13 @@ RUN sed -i '/DocumentRoot/a <Directory /var/www/space-universal/public>\nAllowOv
 
 
 RUN echo "ServerName cosmic-bazaar.sector18.quest" >> /etc/apache2/apache2.conf
+
+# Create fixtures stage
+FROM symfony_php AS fixtures
+
+# Install dev dependencies including fixtures
+RUN composer install --prefer-dist --no-scripts \
+    && composer require --dev doctrine/doctrine-fixtures-bundle
 
 # Expose port 80
 EXPOSE 80

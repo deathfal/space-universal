@@ -4,48 +4,58 @@ on:
   push:
     branches:
       - master
-  pull_request: ~
+  pull_request:
+    branches:
+      - master
   workflow_dispatch: ~
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   deploy:
-    name: Build and Deploy
+    name: Deploy to VPS
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v3
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install Node dependencies
-        run: npm install
-
-      - name: Build Frontend Assets
-        run: npm run build
-
-      - name: Deploy to server
-        uses: appleboy/ssh-action@v1.0.0
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /home/adam/space-universal
-            git pull origin master
+            echo "Switching to SSH remote..."
+            git remote set-url origin git@github.com:deathfal/space-universal.git
+            echo "Current remote URL:"
+            git remote -v
+            echo "Fetching updates..."
+            git fetch origin master
+            echo "Resetting to origin/master..."
+            git reset --hard origin/master
             
-            # Build and restart using compose.yaml
-            docker compose build --no-cache
-            docker compose down
-            docker compose up -d
+            # Build and start containers
+            docker compose build apache fixtures
+            docker compose up -d apache database mailer
             
-            # Run migrations and clear cache
-            docker compose exec -T php bin/console doctrine:migrations:migrate --no-interaction
-            docker compose exec -T php bin/console cache:clear
+            # Fix permissions using docker
+            echo "Fixing permissions..."
+            docker compose exec -T apache chown -R www-data:www-data /var/www/space-universal
+            docker compose exec -T apache find /var/www/space-universal -type f -exec chmod 644 {} \;
+            docker compose exec -T apache find /var/www/space-universal -type d -exec chmod 755 {} \;
+            docker compose exec -T apache chmod -R 777 /var/www/space-universal/var
+            docker compose exec -T apache chmod -R 777 /var/www/space-universal/public
+            
+            # Clear cache and warmup
+            echo "Clearing cache..."
+            docker compose exec -T apache php bin/console cache:clear
+            docker compose exec -T apache php bin/console cache:warmup
+            
+            # Run migrations and load fixtures
+            echo "Running migrations..."
+            docker compose exec -T apache php bin/console doctrine:migrations:migrate --no-interaction
+            echo "Loading fixtures..."
+            docker compose exec php php bin/console doctrine:fixtures:load --no-interaction
