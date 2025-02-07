@@ -241,7 +241,7 @@
         });
 
         // Initialize selected currency from localStorage or default to SPACE-COINS
-        const wallets = {{ wallets|json_encode|raw }};
+        const wallets = {{ app.user ? wallets|json_encode|raw : '[]' }};
         let selectedCurrency = localStorage.getItem('selectedCurrency') || 'SPACE-COINS';
         let selectedBalance = '';
 
