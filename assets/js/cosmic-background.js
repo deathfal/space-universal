@@ -27,6 +27,89 @@ document.addEventListener('DOMContentLoaded', () => {
     const starField = new THREE.Points(starsGeometry, starsMaterial);
     scene.add(starField);
 
+    // Spaceship creation
+    const createSpaceship = () => {
+        const shipGeometry = new THREE.ConeGeometry(0.5, 2, 4);
+        shipGeometry.rotateX(Math.PI / 2);
+        const shipMaterial = new THREE.ShaderMaterial({
+            uniforms: {
+                time: { value: 0 },
+                baseColor: { value: new THREE.Color(0x8B5CF6) }
+            },
+            vertexShader: `
+                varying vec2 vUv;
+                void main() {
+                    vUv = uv;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `,
+            fragmentShader: `
+                uniform float time;
+                uniform vec3 baseColor;
+                varying vec2 vUv;
+                
+                void main() {
+                    float pulse = sin(time * 5.0) * 0.1 + 0.9;
+                    vec3 color = mix(baseColor, vec3(1.0), pulse);
+                    gl_FragColor = vec4(color, 1.0);
+                }
+            `,
+        });
+
+        const ship = new THREE.Mesh(shipGeometry, shipMaterial);
+        
+        // Random starting position
+        ship.position.set(
+            (Math.random() - 0.5) * 100,
+            (Math.random() - 0.5) * 100,
+            -100
+        );
+        
+        // Random rotation
+        ship.rotation.z = Math.random() * Math.PI * 2;
+        
+        // Random speed
+        ship.userData.speed = 0.2 + Math.random() * 0.3;
+        
+        return ship;
+    };
+
+    // Spaceships array
+    const spaceships = [];
+    const maxSpaceships = 3;
+
+    // Function to add new spaceship
+    const addSpaceship = () => {
+        if (spaceships.length < maxSpaceships && Math.random() < 0.01) {
+            const ship = createSpaceship();
+            spaceships.push(ship);
+            scene.add(ship);
+        }
+    };
+
+    // Update spaceship positions
+    const updateSpaceships = (time) => {
+        for (let i = spaceships.length - 1; i >= 0; i--) {
+            const ship = spaceships[i];
+            
+            // Move forward
+            ship.position.z += ship.userData.speed;
+            
+            // Add slight wobble
+            ship.position.x += Math.sin(time * 0.001 + i) * 0.01;
+            ship.position.y += Math.cos(time * 0.001 + i) * 0.01;
+            
+            // Update material time uniform
+            ship.material.uniforms.time.value = time * 0.001;
+            
+            // Remove if out of view
+            if (ship.position.z > 10) {
+                scene.remove(ship);
+                spaceships.splice(i, 1);
+            }
+        }
+    };
+
     // Black hole
     const blackHoleGeometry = new THREE.SphereGeometry(5, 32, 32);
     const blackHoleMaterial = new THREE.ShaderMaterial({
@@ -65,6 +148,11 @@ document.addEventListener('DOMContentLoaded', () => {
         requestAnimationFrame(animate);
         starField.rotation.y += 0.0001;
         blackHoleMaterial.uniforms.time.value = time * 0.001;
+        
+        // Handle spaceships
+        addSpaceship();
+        updateSpaceships(time);
+        
         renderer.render(scene, camera);
     };
 
