@@ -21,10 +21,10 @@ class WalletController extends AbstractController
         $multiplier = pow(10, $scale);
         $num1Int = intval(strval(floatval($num1) * $multiplier));
         $num2Int = intval(strval(floatval($num2) * $multiplier));
-        
+
         // Add as integers
         $sum = $num1Int + $num2Int;
-        
+
         // Convert back to decimal string
         return number_format($sum / $multiplier, $scale, '.', '');
     }
@@ -98,15 +98,15 @@ class WalletController extends AbstractController
 
             // Get or create wallet for the currency
             $wallet = $walletRepository->findOrCreateWallet($currency, $user);
-            
+
             // Add the amount to the current balance
             $newBalance = $this->addDecimals($wallet->getBalance(), $amount);
             $wallet->setBalance($newBalance);
-            
+
             $entityManager->flush();
 
             $successMessage = sprintf('Successfully added %s %s to your wallet', $amount, $currency);
-            
+
             if ($request->isXmlHttpRequest()) {
                 return $this->json([
                     'success' => true,
@@ -118,7 +118,6 @@ class WalletController extends AbstractController
 
             $this->addFlash('success', $successMessage);
             return $this->redirectToRoute('app_wallet_index');
-
         } catch (\Exception $e) {
             if ($request->isXmlHttpRequest()) {
                 return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);

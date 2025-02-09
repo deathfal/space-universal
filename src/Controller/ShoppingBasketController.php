@@ -37,7 +37,7 @@ class ShoppingBasketController extends AbstractController
         ]);
     }
 
-   
+
 
     #[Route('/checkout', name: 'checkout')]
     public function checkout(SessionInterface $session, ProductRepository $productRepository): Response
@@ -106,7 +106,7 @@ class ShoppingBasketController extends AbstractController
     public function payment(SessionInterface $session): Response
     {
         $total = $session->get('total');
-        
+
         if ($total === null) {
             return $this->redirectToRoute('app_shopping_basket');
         }

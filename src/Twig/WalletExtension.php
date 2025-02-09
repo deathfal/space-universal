@@ -34,11 +34,11 @@ class WalletExtension extends AbstractExtension
     public function formatBalance(string $balance, string $currency): string
     {
         $value = floatval($balance);
-        
+
         if ($currency === 'SPACE-COINS') {
             return number_format($value, 2, '.', ',');
         }
-        
+
         return number_format($value, 2, '.', ',');
     }
 

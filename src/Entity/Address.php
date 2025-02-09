@@ -207,7 +207,6 @@ class Address
     public function removeShippingOrder(Order $order): static
     {
         if ($this->shippingOrders->removeElement($order)) {
-
             if ($order->getShippingAddress() === $this) {
                 $order->setShippingAddress(null);
             }

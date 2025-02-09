@@ -67,14 +67,14 @@ class ProfileController extends AbstractController
             if ($avatarFile) {
                 $originalFilename = pathinfo($avatarFile->getClientOriginalName(), PATHINFO_FILENAME);
                 $safeFilename = $slugger->slug($originalFilename);
-                $newFilename = $safeFilename.'-'.uniqid().'.'.$avatarFile->guessExtension();
+                $newFilename = $safeFilename . '-' . uniqid() . '.' . $avatarFile->guessExtension();
 
                 try {
                     $avatarFile->move(
                         $this->getParameter('avatars_directory'),
                         $newFilename
                     );
-                    $user->setAvatarUrl('img/avatars/'.$newFilename);
+                    $user->setAvatarUrl('img/avatars/' . $newFilename);
                 } catch (FileException $e) {
                     $this->addFlash('error', 'Erreur lors du téléchargement de l\'avatar.');
                     return $this->redirectToRoute('app_profile_edit');
@@ -108,7 +108,7 @@ class ProfileController extends AbstractController
                 $user->setAddress($address);
                 $address->setUser($user);
             }
-            
+
             $address->setStreet($request->request->get('street'))
                    ->setCity($request->request->get('city'))
                    ->setPostalCode($request->request->get('postalCode'))
@@ -119,7 +119,7 @@ class ProfileController extends AbstractController
 
             $entityManager->persist($address);
             $entityManager->flush();
-            
+
             $this->addFlash('success', 'Votre adresse a été mise à jour.');
             return $this->redirectToRoute('app_profile');
         }

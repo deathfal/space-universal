@@ -70,6 +70,12 @@
         "post-update-cmd": [
             "@auto-scripts"
         ],
+        "cs-check": "phpcs",
+        "cs-fix": "phpcbf",
+        "test": [
+            "phpunit",
+            "@cs-check"
+        ],
         "phpstan": "phpstan analyse -c phpstan.neon"
     },
     "conflict": {
@@ -88,6 +94,7 @@
         "phpstan/phpstan-doctrine": "^2.0",
         "phpstan/phpstan-symfony": "^2.0",
         "phpunit/phpunit": "^12.0",
+        "squizlabs/php_codesniffer": "^3.11",
         "symfony/browser-kit": "7.1.*",
         "symfony/css-selector": "7.1.*",
         "symfony/maker-bundle": "^1.62",

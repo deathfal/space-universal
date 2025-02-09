@@ -86,12 +86,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->reviews = new ArrayCollection();
         $this->orders = new ArrayCollection();
         $this->wallets = new ArrayCollection();
-        $this->createdAt = new \DateTime(); 
+        $this->createdAt = new \DateTime();
     }
 
     public function eraseCredentials(): void
     {
-
     }
 
     public function getUserIdentifier(): string

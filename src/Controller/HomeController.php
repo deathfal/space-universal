@@ -1,4 +1,5 @@
 <?php
+
 // src/Controller/HomeController.php
 
 namespace App\Controller;
@@ -19,7 +20,7 @@ class HomeController extends AbstractController
     ): Response {
         // Get all products and sort them by average rating
         $products = $productRepository->findAll();
-        usort($products, function($a, $b) {
+        usort($products, function ($a, $b) {
             $aRating = $this->getAverageRating($a->getReviews());
             $bRating = $this->getAverageRating($b->getReviews());
             return $bRating <=> $aRating;

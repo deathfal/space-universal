@@ -98,7 +98,7 @@ class CartController extends AbstractController
     public function clear(SessionInterface $session): Response
     {
         $session->remove('cart');
-        
+
         $this->addFlash('success', 'Votre panier a été vidé');
         return $this->redirectToRoute('app_shopping_basket');
     }

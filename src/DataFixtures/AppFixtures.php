@@ -58,7 +58,7 @@ class AppFixtures extends Fixture
 
         // Create Addresses
         $addresses = [];
-        
+
         // Create address for admin
         $adminAddress = new Address();
         $adminAddress->setStreet("Admin Street");

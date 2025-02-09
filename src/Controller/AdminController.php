@@ -1,4 +1,5 @@
 <?php
+
 // src/Controller/AdminController.php
 
 namespace App\Controller;
@@ -25,8 +26,8 @@ class AdminController extends AbstractController
 {
     #[Route('/admin', name: 'admin_dashboard')]
     public function dashboard(
-        UserRepository $userRepository, 
-        ProductRepository $productRepository, 
+        UserRepository $userRepository,
+        ProductRepository $productRepository,
         OrderRepository $orderRepository,
         CategoryRepository $categoryRepository
     ): Response {
@@ -93,7 +94,7 @@ class AdminController extends AbstractController
             if ($imageFile && $imageFile->isValid()) {
                 $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
                 $safeFilename = $slugger->slug($originalFilename);
-                $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
+                $newFilename = $safeFilename . '-' . uniqid() . '.' . $imageFile->guessExtension();
 
                 try {
                     $imageFile->move(
@@ -103,7 +104,7 @@ class AdminController extends AbstractController
                 } catch (FileException $e) {
                 }
 
-                $product->setImageUrl('img/products/'.$newFilename);
+                $product->setImageUrl('img/products/' . $newFilename);
             }
 
             $entityManager->persist($product);
@@ -135,7 +136,7 @@ class AdminController extends AbstractController
             if ($imageFile && $imageFile->isValid()) {
                 $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
                 $safeFilename = $slugger->slug($originalFilename);
-                $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
+                $newFilename = $safeFilename . '-' . uniqid() . '.' . $imageFile->guessExtension();
 
                 try {
                     $imageFile->move(
@@ -145,7 +146,7 @@ class AdminController extends AbstractController
                 } catch (FileException $e) {
                 }
 
-                $product->setImageUrl('img/products/'.$newFilename);
+                $product->setImageUrl('img/products/' . $newFilename);
             }
 
             $entityManager->persist($product);
@@ -165,7 +166,7 @@ class AdminController extends AbstractController
     #[Route('/admin/products/delete/{id}', name: 'admin_product_delete', methods: ['POST'])]
     public function deleteProduct(Request $request, Product $product, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$product->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $product->getId(), $request->request->get('_token'))) {
             $entityManager->remove($product);
             $entityManager->flush();
         }
@@ -199,7 +200,7 @@ class AdminController extends AbstractController
     #[Route('/admin/orders/delete/{id}', name: 'admin_order_delete', methods: ['POST'])]
     public function deleteOrder(Request $request, Order $order, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$order->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $order->getId(), $request->request->get('_token'))) {
             $entityManager->remove($order);
             $entityManager->flush();
         }
@@ -240,7 +241,7 @@ class AdminController extends AbstractController
                 if ($avatarFile) {
                     $originalFilename = pathinfo($avatarFile->getClientOriginalName(), PATHINFO_FILENAME);
                     $safeFilename = $slugger->slug($originalFilename);
-                    $newFilename = $safeFilename.'-'.uniqid().'.'.$avatarFile->guessExtension();
+                    $newFilename = $safeFilename . '-' . uniqid() . '.' . $avatarFile->guessExtension();
 
                     try {
                         $avatarFile->move(
@@ -250,7 +251,7 @@ class AdminController extends AbstractController
                     } catch (FileException $e) {
                     }
 
-                    $user->setAvatarUrl('img/avatars/'.$newFilename);
+                    $user->setAvatarUrl('img/avatars/' . $newFilename);
                 }
             }
 
@@ -269,7 +270,7 @@ class AdminController extends AbstractController
     #[Route('/admin/users/delete/{id}', name: 'admin_user_delete', methods: ['POST'])]
     public function deleteUser(Request $request, User $user, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $user->getId(), $request->request->get('_token'))) {
             $entityManager->remove($user);
             $entityManager->flush();
         }
@@ -288,7 +289,7 @@ class AdminController extends AbstractController
     #[Route('/admin/reviews/delete/{id}', name: 'admin_review_delete', methods: ['POST'])]
     public function deleteReview(Request $request, Review $review, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$review->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $review->getId(), $request->request->get('_token'))) {
             $entityManager->remove($review);
             $entityManager->flush();
         }
@@ -340,7 +341,7 @@ class AdminController extends AbstractController
     #[Route('/admin/categories/delete/{id}', name: 'admin_category_delete', methods: ['POST'])]
     public function deleteCategory(Request $request, Category $category, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$category->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $category->getId(), $request->request->get('_token'))) {
             $entityManager->remove($category);
             $entityManager->flush();
         }
