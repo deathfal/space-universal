@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Feedback;
+use App\Entity\User;
 use App\Form\FeedbackType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -23,7 +24,9 @@ class FeedbackController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $feedback->setUser($this->getUser());
+            /** @var User $user */
+            $user = $this->getUser();
+            $feedback->setUser($user);
             $entityManager->persist($feedback);
             $entityManager->flush();
 

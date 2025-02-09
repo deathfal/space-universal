@@ -42,6 +42,7 @@ class ShoppingBasketController extends AbstractController
     #[Route('/checkout', name: 'checkout')]
     public function checkout(SessionInterface $session, ProductRepository $productRepository): Response
     {
+        /** @var User $user */
         $user = $this->getUser();
         if (!$user) {
             return $this->redirectToRoute('app_login');

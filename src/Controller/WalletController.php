@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\PaymentMethod;
+use App\Entity\User;
 use App\Entity\Wallet;
 use App\Repository\WalletRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -39,6 +40,7 @@ class WalletController extends AbstractController
     #[Route('/', name: 'app_wallet_index')]
     public function index(WalletRepository $walletRepository): Response
     {
+        /** @var User|null $user */
         $user = $this->getUser();
         if (!$user) {
             $this->addFlash('error', 'You must be logged in to view wallets');

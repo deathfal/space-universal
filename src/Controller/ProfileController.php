@@ -24,6 +24,7 @@ class ProfileController extends AbstractController
     #[Route('/profile', name: 'app_profile')]
     public function index(): Response
     {
+        /** @var User $user */
         $user = $this->getUser();
         if (!$user) {
             return $this->redirectToRoute('app_login');
@@ -37,6 +38,7 @@ class ProfileController extends AbstractController
     #[Route('/profile/edit', name: 'app_profile_edit')]
     public function edit(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher, SluggerInterface $slugger): Response
     {
+        /** @var User $user */
         $user = $this->getUser();
         if (!$user) {
             return $this->redirectToRoute('app_login');
@@ -92,6 +94,7 @@ class ProfileController extends AbstractController
     #[Route('/profile/address', name: 'app_profile_address')]
     public function address(Request $request, EntityManagerInterface $entityManager): Response
     {
+        /** @var User $user */
         $user = $this->getUser();
         if (!$user instanceof User) {
             return $this->redirectToRoute('app_login');
@@ -129,6 +132,7 @@ class ProfileController extends AbstractController
     #[Route('/profile/orders', name: 'app_profile_orders')]
     public function orders(EntityManagerInterface $entityManager): Response
     {
+        /** @var User $user */
         $user = $this->getUser();
         if (!$user) {
             return $this->redirectToRoute('app_login');
@@ -144,12 +148,11 @@ class ProfileController extends AbstractController
     #[Route('/profile/payment-methods', name: 'app_profile_payment_methods')]
     public function paymentMethods(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $currentUser = $this->getUser();
-        if (!$currentUser) {
+        /** @var User $user */
+        $user = $this->getUser();
+        if (!$user) {
             return $this->redirectToRoute('app_login');
         }
-
-        $user = $currentUser;
 
         if ($request->isMethod('POST')) {
             $paymentMethod = new PaymentMethod();
@@ -185,6 +188,7 @@ class ProfileController extends AbstractController
     #[Route('/profile/reviews', name: 'app_profile_reviews')]
     public function reviews(EntityManagerInterface $entityManager): Response
     {
+        /** @var User $user */
         $user = $this->getUser();
         if (!$user) {
             return $this->redirectToRoute('app_login');
