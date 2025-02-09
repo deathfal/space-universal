@@ -127,4 +127,20 @@ class WalletController extends AbstractController
             return $this->redirectToRoute('app_wallet_index');
         }
     }
+
+    #[Route('/set-display-currency', name: 'app_wallet_set_display_currency', methods: ['POST'])]
+    public function setDisplayCurrency(Request $request): Response
+    {
+        $data = json_decode($request->getContent(), true);
+        $currency = $data['currency'] ?? null;
+
+        if (!$currency) {
+            return $this->json(['error' => 'Currency is required'], Response::HTTP_BAD_REQUEST);
+        }
+
+        // Store the selected currency in the session
+        $request->getSession()->set('display_currency', $currency);
+
+        return $this->json(['success' => true]);
+    }
 }

@@ -61,3 +61,34 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+// Function to handle currency selection
+function selectCurrency(currency, balance) {
+    // Update the wallet button display
+    const walletButton = document.getElementById('wallet-menu-button');
+    if (walletButton) {
+        const displaySpan = walletButton.querySelector('span');
+        if (displaySpan) {
+            displaySpan.textContent = balance;
+        }
+    }
+
+    // Close the wallet menu
+    const walletMenu = document.getElementById('wallet-menu');
+    if (walletMenu) {
+        walletMenu.classList.add('hidden');
+    }
+
+    // Store the selected currency preference
+    fetch('/wallet/set-display-currency', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify({ currency })
+    });
+}
+
+// Make selectCurrency available globally
+window.selectCurrency = selectCurrency;
