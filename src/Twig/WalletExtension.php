@@ -35,12 +35,10 @@ class WalletExtension extends AbstractExtension
     {
         $value = floatval($balance);
         
-        // For SPACE-COINS, show 8 decimal places
         if ($currency === 'SPACE-COINS') {
-            return number_format($value, 8, '.', ',');
+            return number_format($value, 2, '.', ',');
         }
         
-        // For regular currencies (USD, EUR), show 2 decimal places
         return number_format($value, 2, '.', ',');
     }
 

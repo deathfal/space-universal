@@ -37,7 +37,7 @@ class ShoppingBasketController extends AbstractController
         ]);
     }
 
-    // ... (previous methods remain the same)
+   
 
     #[Route('/checkout', name: 'checkout')]
     public function checkout(SessionInterface $session, ProductRepository $productRepository): Response
@@ -124,7 +124,6 @@ class ShoppingBasketController extends AbstractController
         $session->remove('cart');
         $session->remove('total');
 
-        // Redirect to a thank you page or order confirmation
         return $this->redirectToRoute('order_confirmation');
     }
 
